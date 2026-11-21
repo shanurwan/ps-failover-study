@@ -81,6 +81,10 @@ for run in $RUNS_SLOT; do
     say "replica reached via |replica: in_recovery=$(rq -c 'select pg_is_in_recovery()' 2>&1 | tr '\n' ' ') sync_replication_slots=$(rq -c 'show sync_replication_slots' 2>&1) hot_standby_feedback=$(rq -c 'show hot_standby_feedback' 2>&1)"
     t0=$(date +%s)
     for i in $(seq 1 ${SLOT_SYNC_WAIT_S:-90}); do
+      if [ "${SLOT_WARM:-0}" = 1 ]; then
+        adm -c "insert into sf_t (v) values ('warm-$i')" >/dev/null 2>&1 || true
+        for s in "${slots[@]}"; do adm -c "$(changes_sql "$s")" >/dev/null 2>&1 || true; done
+      fi
       st=$(rq -c "select synced::text || '/' || temporary::text from pg_replication_slots where slot_name = 'sf_failover'" 2>/dev/null || true)
       if [ "$st" = "true/false" ]; then sync_wait=$(( $(date +%s) - t0 )); break; fi
       sleep 1

@@ -1,0 +1,27 @@
+== active (2026-11-21T21:18:05Z)
+primary: wal_level=logical synchronized_standby_slots=<slot>,<slot>
+NOTICE:  table "sf_t" does not exist, skipping
+NOTICE:  publication "sf_pub" does not exist, skipping
+create sf_failover: sf_failover|0/2B031D40
+consume sf_failover before switchover: pre-consumed-1 pre-consumed-2 pre-consumed-3 pre-consumed-4 pre-consumed-5 
+replica reached via |replica: in_recovery=t  sync_replication_slots=on hot_standby_feedback=on
+replica slot copy synced (not temporary) after: 25
+replica slots before switchover:
+sf_failover|logical|t|t|f|f||0/2B032628|0/2B0327D0
+primary slots before switchover:
+sf_failover|logical|t|f|f|f||0/2B032628|0/2B0327D0
+switchover took 216.319s
+new primary slots after switchover:
+sf_failover|logical|t|t|f|f||0/2B032628|0/2B0327D0
+after switchover sf_failover: exists=1 changes=[post-1 post-2 post-3 post-4 post-5 pre-unconsumed-1 pre-unconsumed-2 pre-unconsumed-3 pre-unconsumed-4 pre-unconsumed-5 ] 
+cleanup: remaining sf_ slots on primary: 0
+# Round `slot-failover`
+
+Expected for a slot that continued correctly: `pre-unconsumed-1 pre-unconsumed-2 pre-unconsumed-3 pre-unconsumed-4 pre-unconsumed-5 post-1 post-2 post-3 post-4 post-5`.
+
+| run | slot | standby sync wait (s) | exists on new primary | changes read after switchover | error |
+|---|---|---|---|---|---|
+| active | sf_failover | 25 | True | `post-1 post-2 post-3 post-4 post-5 pre-unconsumed-1 pre-unconsumed-2 pre-unconsumed-3 pre-unconsumed-4 pre-unconsumed-5` |  |
+| sync-on | sf_failover | - | False | `` |  |
+| sync-on | sf_nofailover | - | False | `` |  |
+SLOT_ACTIVE_DONE

@@ -1,0 +1,79 @@
+[04:44:15] study-role backends: 18
+[04:45:16] study-role backends: 1
+{"guard":"ok","switchovers_so_far":2}
+[04:45:18] switchover/run-2: 7 workload(s) [pgx-default:pooled pgx-cancelreq:pooled node-pg:pooled prisma:pooled drizzle-postgresjs:pooled sqlalchemy-psycopg:pooled rails-activerecord:pooled] at 28 req/s each, 20s + event + 120s
+[04:46:18] switchover command took 37.165s (exit 0)
+pgx-default/pooled-2 pooled: 3921 req, 86 err (0 before event), first_err=11.2 s, window=3.0 s, recovered=14.2 s, acked_missing=0, dup=0, unacked_present=1
+pgx-cancelreq/pooled-2 pooled: 3921 req, 81 err (0 before event), first_err=11.1 s, window=2.9 s, recovered=14.0 s, acked_missing=0, dup=0, unacked_present=3
+node-pg/pooled-2 pooled: 3920 req, 93 err (0 before event), first_err=11.2 s, window=3.3 s, recovered=14.5 s, acked_missing=0, dup=0, unacked_present=46
+prisma/pooled-2 pooled: 3920 req, 94 err (0 before event), first_err=11.1 s, window=3.3 s, recovered=14.5 s, acked_missing=0, dup=0, unacked_present=47
+drizzle-postgresjs/pooled-2 pooled: 3920 req, 79 err (0 before event), first_err=11.2 s, window=2.9 s, recovered=14.1 s, acked_missing=0, dup=0, unacked_present=39
+sqlalchemy-psycopg/pooled-2 pooled: 3920 req, 93 err (0 before event), first_err=11.1 s, window=3.3 s, recovered=14.5 s, acked_missing=0, dup=0, unacked_present=46
+rails-activerecord/pooled-2 pooled: 3920 req, 110 err (0 before event), first_err=11.1 s, window=3.9 s, recovered=15.1 s, acked_missing=0, dup=0, unacked_present=55
+[04:47:51] cooldown 60s
+drizzle-postgresjs/pooled-1 pooled: 3920 req, 78 err (0 before event), first_err=16.1 s, window=2.8 s, recovered=19.0 s, acked_missing=0, dup=0, unacked_present=40
+drizzle-postgresjs/pooled-2 pooled: 3920 req, 79 err (0 before event), first_err=11.2 s, window=2.9 s, recovered=14.1 s, acked_missing=0, dup=0, unacked_present=39
+node-pg/pooled-1 pooled: 3920 req, 95 err (0 before event), first_err=1.9 s, window=17.4 s, recovered=19.3 s, acked_missing=0, dup=0, unacked_present=48
+node-pg/pooled-2 pooled: 3920 req, 93 err (0 before event), first_err=11.2 s, window=3.3 s, recovered=14.5 s, acked_missing=0, dup=0, unacked_present=46
+pgx-cancelreq/pooled-1 pooled: 3921 req, 81 err (0 before event), first_err=16.1 s, window=2.9 s, recovered=19.0 s, acked_missing=0, dup=0, unacked_present=0
+pgx-cancelreq/pooled-2 pooled: 3921 req, 81 err (0 before event), first_err=11.1 s, window=2.9 s, recovered=14.0 s, acked_missing=0, dup=0, unacked_present=3
+pgx-default/pooled-1 pooled: 3921 req, 86 err (0 before event), first_err=2.2 s, window=16.9 s, recovered=19.2 s, acked_missing=0, dup=0, unacked_present=2
+pgx-default/pooled-2 pooled: 3921 req, 86 err (0 before event), first_err=11.2 s, window=3.0 s, recovered=14.2 s, acked_missing=0, dup=0, unacked_present=1
+prisma/pooled-1 pooled: 3920 req, 97 err (0 before event), first_err=1.8 s, window=17.4 s, recovered=19.3 s, acked_missing=0, dup=0, unacked_present=48
+prisma/pooled-2 pooled: 3920 req, 94 err (0 before event), first_err=11.1 s, window=3.3 s, recovered=14.5 s, acked_missing=0, dup=0, unacked_present=47
+rails-activerecord/pooled-1 pooled: 3920 req, 103 err (0 before event), first_err=16.1 s, window=3.6 s, recovered=19.8 s, acked_missing=0, dup=0, unacked_present=52
+rails-activerecord/pooled-2 pooled: 3920 req, 110 err (0 before event), first_err=11.1 s, window=3.9 s, recovered=15.1 s, acked_missing=0, dup=0, unacked_present=55
+sqlalchemy-psycopg/pooled-1 pooled: 3920 req, 94 err (0 before event), first_err=2.2 s, window=17.0 s, recovered=19.3 s, acked_missing=0, dup=0, unacked_present=46
+sqlalchemy-psycopg/pooled-2 pooled: 3920 req, 93 err (0 before event), first_err=11.1 s, window=3.3 s, recovered=14.5 s, acked_missing=0, dup=0, unacked_present=46
+[04:48:52] study-role backends: 13
+[04:49:52] study-role backends: 13
+[04:50:53] study-role backends: 13
+[04:51:53] study-role backends: 13
+[04:52:54] study-role backends: 13
+[04:53:55] study-role backends: 13
+[04:54:56] study-role backends: 13
+[04:55:56] study-role backends: 13
+[04:56:57] study-role backends: 9
+[04:57:57] study-role backends: 1
+{"guard":"ok","switchovers_so_far":3}
+[04:57:59] switchover-direct/run-1: 1 workload(s) [pgx-default:direct] at 50 req/s each, 20s + event + 120s
+[04:59:07] switchover command took 47.799s (exit 0)
+pgx-default/direct-1 direct: 7000 req, 80 err (0 before event), first_err=17.1 s, window=1.8 s, recovered=18.9 s, acked_missing=0, dup=0, unacked_present=13
+[05:00:21] cooldown 60s
+{"guard":"last switchover completed 137s ago; waiting 163s"}
+{"guard":"ok","switchovers_so_far":4}
+[05:04:08] switchover-direct/run-2: 1 workload(s) [pgx-default:direct] at 50 req/s each, 20s + event + 120s
+[05:05:09] switchover command took 40.573s (exit 0)
+pgx-default/direct-2 direct: 7000 req, 81 err (0 before event), first_err=12.7 s, window=1.8 s, recovered=14.5 s, acked_missing=0, dup=0, unacked_present=12
+[05:06:29] cooldown 60s
+pgx-default/direct-1 direct: 7000 req, 80 err (0 before event), first_err=17.1 s, window=1.8 s, recovered=18.9 s, acked_missing=0, dup=0, unacked_present=13
+pgx-default/direct-2 direct: 7000 req, 81 err (0 before event), first_err=12.7 s, window=1.8 s, recovered=14.5 s, acked_missing=0, dup=0, unacked_present=12
+[05:07:30] study-role backends: 1
+== sync-on (2026-11-21T21:07:30Z)
+primary: wal_level=logical synchronized_standby_slots=
+NOTICE:  table "sf_t" does not exist, skipping
+NOTICE:  publication "sf_pub" does not exist, skipping
+create sf_failover: sf_failover|0/271778B0
+create sf_nofailover: sf_nofailover|0/271778E8
+consume sf_failover before switchover: pre-consumed-1 pre-consumed-2 pre-consumed-3 pre-consumed-4 pre-consumed-5 
+consume sf_nofailover before switchover: pre-consumed-1 pre-consumed-2 pre-consumed-3 pre-consumed-4 pre-consumed-5 
+replica reached via |replica: in_recovery=t  sync_replication_slots=off hot_standby_feedback=off
+replica slot copy synced (not temporary) after: never (waited 139s)
+replica slots before switchover:
+primary slots before switchover:
+sf_failover|logical|t|f|f|f||0/271778B0|0/27177CB0
+sf_nofailover|logical|f|f|f|f||0/271778B0|0/27177CB0
+switchover took 68.353s
+new primary slots after switchover:
+after switchover sf_failover: exists=0 changes=[] 
+after switchover sf_nofailover: exists=0 changes=[] 
+cleanup: remaining sf_ slots on primary: 0
+# Round `slot-failover`
+
+Expected for a slot that continued correctly: `pre-unconsumed-1 pre-unconsumed-2 pre-unconsumed-3 pre-unconsumed-4 pre-unconsumed-5 post-1 post-2 post-3 post-4 post-5`.
+
+| run | slot | standby sync wait (s) | exists on new primary | changes read after switchover | error |
+|---|---|---|---|---|---|
+| sync-on | sf_failover | - | False | `` |  |
+| sync-on | sf_nofailover | - | False | `` |  |
+ALL_DONE2
