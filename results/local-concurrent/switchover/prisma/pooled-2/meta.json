@@ -1,0 +1,4 @@
+{"round":"switchover","client":"prisma","run":"pooled-2","endpoint":"pooled","target":"local",
+ "rate":25,"pre_s":20,"post_s":120,"timeout_ms":2000,"client_start":1795291310.876,
+ "concurrent_workloads":8,"group":"run-2","ledger_tag":"prisma/switchover/run-2/pooled/1795291308","client_env":"",
+ "url_host":"pgbouncer:6432"}

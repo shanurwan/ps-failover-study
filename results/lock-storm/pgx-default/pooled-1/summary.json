@@ -1,0 +1,62 @@
+{
+ "dir": "results/lock-storm/pgx-default/pooled-1",
+ "round": "lock-storm",
+ "client": "pgx-default",
+ "run": "pooled-1",
+ "endpoint": "pooled",
+ "target": "local",
+ "rate": 50,
+ "client_env": "",
+ "event": {
+  "kind": "lock",
+  "start": 1795290807.564,
+  "end": 1795290838.462,
+  "lock_s": 30
+ },
+ "switchover_steps": {},
+ "requests": 5500,
+ "ok": 4098,
+ "errors": 1402,
+ "errors_before_event": 0,
+ "errors_after_event": 1402,
+ "first_error_s": 0.368,
+ "error_window_s": 28.02,
+ "recovered_s": 28.408,
+ "never_recovered": false,
+ "errors_after_recovery": 0,
+ "last_error_s": 28.388,
+ "inserts_attempted": 2750,
+ "inserts_acked": 2049,
+ "ledger_rows": 2049,
+ "acked_missing": [],
+ "duplicates": [],
+ "unacked_present": 0,
+ "late_insert_ok": 0,
+ "latency_ok_ms_p50": 1.5,
+ "latency_ok_ms_p99": 1208.5,
+ "distinct_errors": [
+  {
+   "error_class": "timeout",
+   "message": "timeout: context deadline exceeded",
+   "count": 1402
+  }
+ ],
+ "process_errors": [],
+ "sessions": {
+  "new_sessions_per_s_max_before": 2.8,
+  "new_sessions_per_s_max_during": 11.6,
+  "new_sessions_per_s_max_after": 1.0,
+  "new_sessions_per_s_mean_last_20s": 0.9,
+  "backends_max": 14,
+  "lock_waiters_max": 12,
+  "active_max": 14
+ },
+ "pgbouncer": {
+  "patterns": {},
+  "closing_reasons": {
+   "successfully sent cancel request": 2802,
+   "client close request": 1516,
+   "cancel request for idle client": 1
+  }
+ }
+}

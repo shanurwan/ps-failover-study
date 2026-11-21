@@ -1,0 +1,103 @@
+{
+ "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/prisma/pooled-1",
+ "round": "switchover",
+ "client": "prisma",
+ "run": "pooled-1",
+ "endpoint": "pooled",
+ "target": "local",
+ "rate": 25,
+ "client_env": "",
+ "event": {
+  "kind": "switchover",
+  "start": 1795289551.433,
+  "end": 1795289553.293,
+  "exit_code": 0,
+  "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+ },
+ "switchover_steps": {
+  "begin_s": 0.25,
+  "old_primary_stopped_s": 0.76,
+  "promoted_s": 1.13,
+  "direct_alias_moved_s": 1.29,
+  "pgbouncer_restarted_s": 1.86,
+  "end_s": 1.86
+ },
+ "requests": 3500,
+ "ok": 3475,
+ "errors": 25,
+ "errors_before_event": 0,
+ "errors_after_event": 25,
+ "first_error_s": 0.327,
+ "error_window_s": 1.0,
+ "recovered_s": 1.367,
+ "never_recovered": false,
+ "errors_after_recovery": 0,
+ "last_error_s": 1.327,
+ "inserts_attempted": 1750,
+ "inserts_acked": 1738,
+ "ledger_rows": 1742,
+ "acked_missing": [],
+ "duplicates": [],
+ "unacked_present": 4,
+ "late_insert_ok": 4,
+ "latency_ok_ms_p50": 2,
+ "latency_ok_ms_p99": 12,
+ "distinct_errors": [
+  {
+   "error_class": "timeout",
+   "message": "client deadline 2000ms exceeded",
+   "count": 9
+  },
+  {
+   "error_class": "pg_P1001",
+   "message": "\nInvalid `prisma.ledger.create()` invocation:\n\n\nCan't reach database server at 192.168.64.3:6432",
+   "count": 4
+  },
+  {
+   "error_class": "pg_P1001",
+   "message": "\nInvalid `prisma.ledger.findFirst()` invocation:\n\n\nCan't reach database server at 192.168.64.3:6432",
+   "count": 4
+  },
+  {
+   "error_class": "pg_P1001",
+   "message": "\nInvalid `prisma.ledger.findFirst()` invocation:\n\n\nCan't reach database server at pgbouncer",
+   "count": 4
+  },
+  {
+   "error_class": "pg_P1001",
+   "message": "\nInvalid `prisma.ledger.create()` invocation:\n\n\nCan't reach database server at pgbouncer",
+   "count": 3
+  },
+  {
+   "error_class": "pg_P2039",
+   "message": "\nInvalid `prisma.ledger.findFirst()` invocation:\n\n\nDatabase error. Code: `08P01`. Message: `server shutting down`",
+   "count": 1
+  }
+ ],
+ "process_errors": [],
+ "sessions": {
+  "new_sessions_per_s_max_before": 3.6,
+  "new_sessions_per_s_max_during": 1.0,
+  "new_sessions_per_s_max_after": 0.0,
+  "new_sessions_per_s_mean_last_20s": 0.0,
+  "backends_max": 20,
+  "lock_waiters_max": 0,
+  "active_max": 2
+ },
+ "pgbouncer": {
+  "patterns": {
+   "pooler error": 11,
+   "client disconnect while server was not ready": 1,
+   "client unexpected eof": 10
+  },
+  "closing_reasons": {
+   "client close request": 183,
+   "server shutting down": 11,
+   "pooler error: server shutting down": 11,
+   "client unexpected eof": 10,
+   "pause mode": 4,
+   "cancel request for idle client": 1,
+   "client disconnect while server was not ready": 1
+  }
+ }
+}

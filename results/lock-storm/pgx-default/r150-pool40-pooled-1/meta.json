@@ -1,0 +1,4 @@
+{"round":"lock-storm","client":"pgx-default","run":"r150-pool40-pooled-1","endpoint":"pooled","target":"local",
+ "rate":150,"pre_s":20,"post_s":90,"timeout_ms":2000,"client_start":1795291033.289,
+ "concurrent_workloads":1,"group":"r150-pool40-pgx-default-pooled-1","ledger_tag":"pgx-default/lock-storm/r150-pool40-pgx-default-pooled-1/pooled/1795291032","client_env":"",
+ "url_host":"pgbouncer:6432"}

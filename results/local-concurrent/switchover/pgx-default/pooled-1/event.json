@@ -1,0 +1,1 @@
+{"kind":"switchover","start":1795289551.433,"end":1795289553.293,"exit_code":0,"cmd":"/home/wan/ps-failover-study/scripts/local-switchover.sh"}

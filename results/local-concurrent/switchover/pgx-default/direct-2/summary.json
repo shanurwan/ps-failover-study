@@ -1,0 +1,97 @@
+{
+ "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/pgx-default/direct-2",
+ "round": "switchover",
+ "client": "pgx-default",
+ "run": "direct-2",
+ "endpoint": "direct",
+ "target": "local",
+ "rate": 25,
+ "client_env": "",
+ "event": {
+  "kind": "switchover",
+  "start": 1795291330.881,
+  "end": 1795291333.56,
+  "exit_code": 0,
+  "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+ },
+ "switchover_steps": {
+  "begin_s": 0.39,
+  "old_primary_stopped_s": 0.74,
+  "promoted_s": 1.28,
+  "direct_alias_moved_s": 1.5,
+  "pgbouncer_repointed_s": 2.67,
+  "end_s": 2.68
+ },
+ "requests": 3500,
+ "ok": 3474,
+ "errors": 26,
+ "errors_before_event": 0,
+ "errors_after_event": 26,
+ "first_error_s": 0.466,
+ "error_window_s": 1.0,
+ "recovered_s": 1.506,
+ "never_recovered": false,
+ "errors_after_recovery": 0,
+ "last_error_s": 1.466,
+ "inserts_attempted": 1750,
+ "inserts_acked": 1737,
+ "ledger_rows": 1737,
+ "acked_missing": [],
+ "duplicates": [],
+ "unacked_present": 0,
+ "late_insert_ok": 0,
+ "latency_ok_ms_p50": 1.1,
+ "latency_ok_ms_p99": 20.8,
+ "distinct_errors": [
+  {
+   "error_class": "dns",
+   "message": "failed to connect to `user=app database=app`:\n\thostname resolving error: lookup pg-primary on 127.0.0.11:53: no such host\n\tlookup pg-primary on 127.0.0.11:53: no such host",
+   "count": 20
+  },
+  {
+   "error_class": "net_dial",
+   "message": "failed to connect to `user=app database=app`:\n\t192.168.32.2:5432 (pg-primary): dial error: dial tcp 192.168.32.2:5432: connect: connection refused\n\t192.168.32.2:5432 (pg-primary): dial error: dial tcp 192.168.32.2:5432: connect: connection refused",
+   "count": 4
+  },
+  {
+   "error_class": "pg_57P01",
+   "message": "FATAL: terminating connection due to administrator command (SQLSTATE 57P01)",
+   "count": 1
+  },
+  {
+   "error_class": "dns",
+   "message": "failed to connect to `user=app database=app`:\n\tlookup pg-primary on 127.0.0.11:53: no such host\n\t192.168.32.2:5432 (pg-primary): tls error: server refused TLS connection",
+   "count": 1
+  }
+ ],
+ "process_errors": [],
+ "sessions": {
+  "new_sessions_per_s_max_before": 2.7,
+  "new_sessions_per_s_max_during": 0.9,
+  "new_sessions_per_s_max_after": 21.5,
+  "new_sessions_per_s_mean_last_20s": 0.0,
+  "backends_max": 23,
+  "lock_waiters_max": 0,
+  "active_max": 4
+ },
+ "pgbouncer": {
+  "patterns": {
+   "server login failed": 1,
+   "pooler error": 229,
+   "client disconnect while server was not ready": 4,
+   "client unexpected eof": 10
+  },
+  "closing_reasons": {
+   "client close request": 234,
+   "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+   "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+   "client unexpected eof": 10,
+   "cancel request for idle client": 8,
+   "idle server got dirty": 4,
+   "client disconnect while server was not ready": 4,
+   "the database system is shutting down": 1,
+   "not sending cancel request for client that is now idle": 1,
+   "failed to send cancel req": 1
+  }
+ }
+}

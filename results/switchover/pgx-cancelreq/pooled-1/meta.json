@@ -1,0 +1,3 @@
+{"round":"switchover","client":"pgx-cancelreq","run":"pooled-1","endpoint":"pooled","target":"local",
+ "rate":50,"pre_s":20,"post_s":120,"timeout_ms":2000,"client_start":1795288836.527,
+ "ledger_tag":"pgx-cancelreq/switchover/pooled-1/1795288827","client_env":"","url_host":"pgbouncer:6432"}

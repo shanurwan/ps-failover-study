@@ -1,0 +1,82 @@
+{
+ "dir": "results/lock-storm/pgx-default/r150-pool40-pooled-1",
+ "round": "lock-storm",
+ "client": "pgx-default",
+ "run": "r150-pool40-pooled-1",
+ "endpoint": "pooled",
+ "target": "local",
+ "rate": 150,
+ "client_env": "",
+ "event": {
+  "kind": "lock",
+  "start": 1795291053.292,
+  "end": 1795291084.263,
+  "lock_s": 30
+ },
+ "switchover_steps": {},
+ "requests": 16501,
+ "ok": 11237,
+ "errors": 5264,
+ "errors_before_event": 0,
+ "errors_after_event": 5264,
+ "first_error_s": 0.358,
+ "error_window_s": 35.087,
+ "recovered_s": 35.452,
+ "never_recovered": false,
+ "errors_after_recovery": 0,
+ "last_error_s": 35.445,
+ "inserts_attempted": 8251,
+ "inserts_acked": 5619,
+ "ledger_rows": 5619,
+ "acked_missing": [],
+ "duplicates": [],
+ "unacked_present": 0,
+ "late_insert_ok": 0,
+ "latency_ok_ms_p50": 1.2,
+ "latency_ok_ms_p99": 205.6,
+ "distinct_errors": [
+  {
+   "error_class": "pg_08P01",
+   "message": "FATAL: server login has been failing, cached error: remaining connection slots are reserved for roles with the SUPERUSER attribute (se (SQLSTATE 08P01)",
+   "count": 4768
+  },
+  {
+   "error_class": "timeout",
+   "message": "timeout: context deadline exceeded",
+   "count": 380
+  },
+  {
+   "error_class": "timeout",
+   "message": "context deadline exceeded",
+   "count": 116
+  }
+ ],
+ "process_errors": [],
+ "sessions": {
+  "new_sessions_per_s_max_before": 3.8,
+  "new_sessions_per_s_max_during": 42.1,
+  "new_sessions_per_s_max_after": 8.4,
+  "new_sessions_per_s_mean_last_20s": 0.9,
+  "backends_max": 97,
+  "lock_waiters_max": 95,
+  "active_max": 96
+ },
+ "pgbouncer": {
+  "patterns": {
+   "client disconnect while server was not ready": 101,
+   "server login failed": 2,
+   "pooler error": 4808
+  },
+  "closing_reasons": {
+   "server login has been failing, cached error: remaining connection slots are reserved for roles with the SUPERUSER attribute (se": 4769,
+   "pooler error: server login has been failing, cached error: remaining connection slots are reserved for roles with the SUPERUSER attribute (se": 4769,
+   "client close request": 476,
+   "successfully sent cancel request": 476,
+   "cancel request for idle client": 141,
+   "client disconnect while server was not ready": 101,
+   "remaining connection slots are reserved for roles with the SUPERUSER attribute": 41,
+   "pooler error: remaining connection slots are reserved for roles with the SUPERUSER attribute": 39,
+   "failed cancel request": 1
+  }
+ }
+}

@@ -1,0 +1,1 @@
+sqlalchemy 2.1.9 pool=QueuePool size=5 overflow=10 timeout=30.0 pre_ping=False

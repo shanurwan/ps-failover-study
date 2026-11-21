@@ -1,0 +1,131 @@
+# Local stand-in for a PlanetScale Postgres cluster:
+#   pg1  - primary (Postgres 17)
+#   pg2  - streaming replica, promotable, with slot sync enabled
+#   pgbouncer - PgBouncer 1.24, pool_mode=transaction, port 6432
+#
+# Networks:
+#   db    - pg1, pg2, pgbouncer (replication + pooled server connections)
+#   front - what workload clients join. The current primary carries the
+#           network alias "pg-primary" here; scripts/local-switchover.sh moves
+#           the alias to the new primary, so "pg-primary:5432" behaves like a
+#           direct endpoint that follows the primary.
+#
+# The passwords below are throwaway values for this local stand-in only.
+name: psfs
+
+networks:
+  db: {}
+  front: {}
+
+x-pg-common: &pg-common
+  image: postgres:17
+  shm_size: 256m
+  stop_signal: SIGINT        # fast shutdown, as `pg_ctl stop -m fast`
+  stop_grace_period: 60s
+  environment:
+    POSTGRES_PASSWORD: postgres
+    PGDATA: /var/lib/postgresql/data
+
+services:
+  pg1:
+    <<: *pg-common
+    container_name: psfs-pg1
+    hostname: pg1
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - max_wal_senders=20
+      - -c
+      - max_replication_slots=20
+      - -c
+      - hot_standby=on
+      - -c
+      - hot_standby_feedback=on
+      - -c
+      - sync_replication_slots=on
+      - -c
+      - synchronized_standby_slots=pg2_slot
+      - -c
+      - log_connections=on
+      - -c
+      - log_disconnections=on
+      - -c
+      - log_line_prefix=%m [%p] %u@%d %a
+    volumes:
+      - pg1data:/var/lib/postgresql/data
+      - ./postgres/primary-init.sh:/docker-entrypoint-initdb.d/10-init.sh:ro
+    networks:
+      db: {}
+      front:
+        aliases: [pg-primary]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d app"]
+      interval: 1s
+      timeout: 3s
+      retries: 60
+
+  pg2:
+    <<: *pg-common
+    container_name: psfs-pg2
+    hostname: pg2
+    user: postgres
+    entrypoint: ["/bin/bash", "/replica-entrypoint.sh"]
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - max_wal_senders=20
+      - -c
+      - max_replication_slots=20
+      - -c
+      - hot_standby=on
+      - -c
+      - hot_standby_feedback=on
+      # sync_replication_slots=on is set in postgresql.auto.conf by
+      # replica-entrypoint.sh, so the slot-failover round can turn it off
+      # with ALTER SYSTEM (a -c flag would override that).
+      - -c
+      - log_connections=on
+      - -c
+      - log_disconnections=on
+      - -c
+      - log_line_prefix=%m [%p] %u@%d %a
+    volumes:
+      - pg2data:/var/lib/postgresql/data
+      - ./postgres/replica-entrypoint.sh:/replica-entrypoint.sh:ro
+    networks:
+      db: {}
+    depends_on:
+      pg1:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "test \"$(psql -h 127.0.0.1 -U postgres -tAc 'select status from pg_stat_wal_receiver')\" = streaming"]
+      interval: 1s
+      timeout: 3s
+      retries: 120
+
+  pgbouncer:
+    build: ./pgbouncer
+    image: psfs-pgbouncer:1.24
+    container_name: psfs-pgbouncer
+    hostname: pgbouncer
+    environment:
+      PRIMARY_HOST: pg1
+    networks:
+      db: {}
+      front: {}
+    depends_on:
+      pg1:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "psql -h 127.0.0.1 -p 6432 -U admin pgbouncer -tAc 'show version' >/dev/null"]
+      interval: 1s
+      timeout: 3s
+      retries: 60
+
+volumes:
+  pg1data: {}
+  pg2data: {}

@@ -1,0 +1,300 @@
+#!/usr/bin/env bash
+# Runs one round of the study against a target.
+#
+#   scripts/study build                 build the client images
+#   scripts/study target-info           record the target's settings
+#   scripts/study switchover            main round: workloads across a switchover
+#   scripts/study lock-storm            long lock + 2 s timeouts, no switchover
+#   scripts/study session-features      session state through 6432 vs 5432
+#   scripts/study slot-failover         logical slots across a switchover
+#   scripts/study report <round>        (re)build <results>/<round>/report.{md,json}
+#
+# Target: environment variables, then ~/.config/ps-study.env for anything not
+# already set (the file is read as KEY=VALUE lines, never executed). An
+# explicit TARGET=local skips the file.
+#   TARGET=local|planetscale  (default local)
+#   PG_DIRECT_URL   direct Postgres, port 5432
+#   PG_POOLED_URL   PgBouncer, port 6432
+#   PG_ADMIN_URL    for slot functions and stats sampling (default PG_DIRECT_URL)
+#   SWITCHOVER_CMD  command that performs one switchover and returns when done
+#   PS_ORG, PS_DB, PS_BRANCH   used by the default PlanetScale SWITCHOVER_CMD
+#   CA_BUNDLE       host CA bundle mounted into containers for verify-full
+#                   (planetscale; default /etc/pki/tls/certs/ca-bundle.crt)
+#
+# Which workloads run:
+#   WORKLOADS="client:endpoint ..."  explicit list, or else CLIENTS x ENDPOINTS
+#   CLIENTS (all), ENDPOINTS ("pooled direct")
+#   CONCURRENT=1    all workloads share one event per run (default on
+#                   planetscale, to spend fewer switchovers); 0 = one at a time
+# Knobs: RUNS (2), RATE (per workload; default 50, or 200/N when concurrent;
+#   the total is capped at 200 req/s), PRE_S (20), POST_S (120),
+#   TIMEOUT_MS (2000), LOCK_S (30), COOLDOWN_S (planetscale: 60),
+#   CLIENT_ENV ("K=V ..." for every client), RUN_PREFIX, RESULTS
+#   (default results, or results/planetscale on planetscale).
+set -euo pipefail
+
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
+D=${DOCKER:-$HOME/bin/docker}
+
+load_env() { # KEY=VALUE file; never overrides variables already set
+  local line key val
+  while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in ""|\#*) continue ;; esac
+    line=${line#export }
+    key=${line%%=*}; val=${line#*=}
+    case "$val" in \"*\") val=${val#\"}; val=${val%\"} ;; \'*\') val=${val#\'}; val=${val%\'} ;; esac
+    [ -n "${!key+x}" ] || export "$key=$val"
+  done < "$1"
+}
+if [ "${TARGET:-}" != local ] && [ -f "$HOME/.config/ps-study.env" ]; then load_env "$HOME/.config/ps-study.env"; fi
+
+TARGET=${TARGET:-local}
+PRE_S=${PRE_S:-20}
+POST_S=${POST_S:-120}
+TIMEOUT_MS=${TIMEOUT_MS:-2000}
+RUNS=${RUNS:-2}
+LOCK_S=${LOCK_S:-30}
+ENDPOINTS=${ENDPOINTS:-pooled direct}
+ALL_CLIENTS="pgx-default pgx-cancelreq node-pg prisma drizzle-postgresjs sqlalchemy-psycopg rails-activerecord"
+CLIENTS=${CLIENTS:-$ALL_CLIENTS}
+RUN_PREFIX=${RUN_PREFIX:-}
+
+case "$TARGET" in
+  local)
+    PG_DIRECT_URL=${PG_DIRECT_URL:-postgresql://app:app@pg-primary:5432/app}
+    PG_POOLED_URL=${PG_POOLED_URL:-postgresql://app:app@pgbouncer:6432/app}
+    PG_ADMIN_URL=${PG_ADMIN_URL:-postgresql://postgres:postgres@pg-primary:5432/app}
+    SWITCHOVER_CMD=${SWITCHOVER_CMD:-$ROOT/scripts/local-switchover.sh}
+    DARGS=(--network psfs_front)
+    CONCURRENT=${CONCURRENT:-0}
+    RESULTS=${RESULTS:-$ROOT/results}
+    COOLDOWN_S=${COOLDOWN_S:-0}
+    ;;
+  planetscale)
+    : "${PG_DIRECT_URL:?set PG_DIRECT_URL (port 5432)}" "${PG_POOLED_URL:?set PG_POOLED_URL (port 6432)}"
+    PG_ADMIN_URL=${PG_ADMIN_URL:-$PG_DIRECT_URL}
+    SWITCHOVER_CMD=${SWITCHOVER_CMD:-$ROOT/scripts/planetscale-switchover.sh}
+    CA_BUNDLE=${CA_BUNDLE:-/etc/pki/tls/certs/ca-bundle.crt}
+    # Slim images ship no CA bundle; sslmode=verify-full needs one.
+    DARGS=(-v "$CA_BUNDLE:/etc/ssl/certs/ca-certificates.crt:ro" -e SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt)
+    CONCURRENT=${CONCURRENT:-1}
+    RESULTS=${RESULTS:-$ROOT/results/planetscale}
+    COOLDOWN_S=${COOLDOWN_S:-60}
+    export PS_ORG PS_DB PS_BRANCH PLANETSCALE_SERVICE_TOKEN_ID PLANETSCALE_SERVICE_TOKEN 2>/dev/null || true
+    ;;
+  *) echo "TARGET must be local or planetscale" >&2; exit 2 ;;
+esac
+
+now() { date +%s.%3N; }
+log() { echo "[$(date +%H:%M:%S)] $*" >&2; }
+cleanup() {
+  local ids
+  ids=$($D ps -aq --filter "label=psfs.owner=$$" 2>/dev/null || true)
+  [ -z "$ids" ] || $D rm -f $ids >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
+psqlx() { # url psql-args...
+  local url=$1; shift
+  $D run --rm -i ${DARGS[@]+"${DARGS[@]}"} postgres:17 psql "$url" -X -v ON_ERROR_STOP=1 -At "$@"
+}
+psql_retry() { # for the moments right after a switchover
+  local i
+  for i in $(seq 1 60); do
+    if psqlx "$@" 2>/dev/null; then return 0; fi
+    sleep 1
+  done
+  psqlx "$@"
+}
+
+# node-postgres (and Prisma through @prisma/adapter-pg) reads sslrootcert as a
+# file path and fails with "ENOENT: no such file or directory, open 'system'".
+# For those two the parameter is dropped, which leaves sslmode=verify-full
+# checking against Node's built-in CA store.
+client_url() { # client url
+  case "$1" in
+    node-pg|prisma) echo "$2" | sed -E 's/([?&])sslrootcert=system(&|$)/\1/; s/[?&]$//' ;;
+    *) echo "$2" ;;
+  esac
+}
+
+url_for() { case "$1" in pooled) echo "$PG_POOLED_URL" ;; direct) echo "$PG_DIRECT_URL" ;; *) echo "bad endpoint $1" >&2; exit 2 ;; esac; }
+
+client_spec() { # name -> IMAGE, CENV, ENTRY
+  CENV=""; ENTRY=""
+  case "$1" in
+    pgx-default)        IMAGE=psfs-go; CENV=PGX_CANCEL=default ;;
+    pgx-cancelreq)      IMAGE=psfs-go; CENV=PGX_CANCEL=cancelrequest ;;
+    node-pg)            IMAGE=psfs-node; ENTRY=node-pg.mjs ;;
+    prisma)             IMAGE=psfs-node; ENTRY=prisma.mjs ;;
+    drizzle-postgresjs) IMAGE=psfs-node; ENTRY=drizzle.mjs ;;
+    sqlalchemy-psycopg) IMAGE=psfs-py; ENTRY=workload.py ;;
+    rails-activerecord) IMAGE=psfs-ruby; ENTRY=workload.rb ;;
+    *) echo "unknown client $1" >&2; exit 2 ;;
+  esac
+}
+
+build() {
+  (cd "$ROOT/clients/go-pgx" && $D build -q -t psfs-go .)
+  (cd "$ROOT/clients/node" && $D build -q -t psfs-node .)
+  (cd "$ROOT/clients/python" && $D build -q -t psfs-py .)
+  (cd "$ROOT/clients/ruby" && $D build -q -t psfs-ruby .)
+  (cd "$ROOT/deploy" && $D compose build -q)
+}
+
+prepare_target() {
+  if [ "$TARGET" = local ]; then
+    log "resetting local stand-in"
+    "$ROOT/scripts/local-reset.sh"
+  fi
+  psql_retry "$PG_DIRECT_URL" \
+    -c "CREATE TABLE IF NOT EXISTS ledger (id bigserial PRIMARY KEY, client text NOT NULL, seq bigint NOT NULL, ts timestamptz NOT NULL DEFAULT now())" \
+    -c "CREATE INDEX IF NOT EXISTS ledger_client_seq ON ledger (client, seq)" >/dev/null
+}
+
+# Background sampler: one row per second of session counters on the current
+# primary (it reconnects for every sample, so it adds one session per second).
+start_sampler() {
+  local name="psfs-sampler-$$"
+  $D run -d --rm --name "$name" --label "psfs.owner=$$" ${DARGS[@]+"${DARGS[@]}"} -e URL="$PG_ADMIN_URL" postgres:17 bash -c '
+    while true; do
+      psql "$URL" -X -At -F, -c "select extract(epoch from clock_timestamp()),
+        (select sessions from pg_stat_database where datname = current_database()),
+        (select count(*) from pg_stat_activity where datname = current_database()),
+        (select count(*) from pg_stat_activity where wait_event_type = '\''Lock'\''),
+        (select count(*) from pg_stat_activity where state = '\''active'\'' and backend_type = '\''client backend'\'')" 2>/dev/null \
+        || echo "$(date +%s.%3N),,,,"
+      sleep 1
+    done' >/dev/null
+  echo "$name"
+}
+stop_sampler() { # name outfile
+  $D logs "$1" > "$2" 2>/dev/null || true
+  $D rm -f "$1" >/dev/null 2>&1 || true
+}
+
+collect_local_logs() { # dir since
+  [ "$TARGET" = local ] || return 0
+  $D logs --since "$2" psfs-pgbouncer > "$1/pgbouncer.log" 2>&1 || true
+  $D exec psfs-pgbouncer psql -h 127.0.0.1 -p 6432 -U admin pgbouncer -c 'show config' > "$1/pgbouncer-config.txt" 2>&1 || true
+  local n; for n in pg1 pg2; do $D logs --since "$2" "psfs-$n" > "$1/$n.log" 2>&1 || true; done
+}
+
+# Events write event.json (and switchover.out) into the given directory.
+event_switchover() { # dir
+  local dir=$1 t0 t1 rc=0
+  t0=$(now)
+  $SWITCHOVER_CMD > "$dir/switchover.out" 2>&1 || rc=$?
+  t1=$(now)
+  printf '{"kind":"switchover","start":%s,"end":%s,"exit_code":%s,"cmd":"%s"}\n' "$t0" "$t1" "$rc" "${SWITCHOVER_CMD//\"/\\\"}" > "$dir/event.json"
+  log "switchover command took $(awk "BEGIN{print $t1 - $t0}")s (exit $rc)"
+}
+event_lock() { # dir
+  local dir=$1 t0 t1
+  t0=$(now)
+  psqlx "$PG_DIRECT_URL" -c "BEGIN" -c "LOCK TABLE ledger IN ACCESS EXCLUSIVE MODE" -c "SELECT pg_sleep($LOCK_S)" -c "COMMIT" > "$dir/lock.out" 2>&1 || true
+  t1=$(now)
+  printf '{"kind":"lock","start":%s,"end":%s,"lock_s":%s}\n' "$t0" "$t1" "$LOCK_S" > "$dir/event.json"
+  log "lock held $(awk "BEGIN{print $t1 - $t0}")s"
+}
+
+# One run: start every workload in the group, run the event, collect.
+run_group() { # round runid event workload...
+  local round=$1 runid=$2 event=$3; shift 3
+  local gdir="$RESULTS/$round/_runs/$runid" since sampler t_start w client endpoint dir url tag i=0
+  local names=() dirs=() tags=() eps=() cls=()
+  rm -rf "$gdir"; mkdir -p "$gdir"
+  if [ "$event" = event_switchover ] && [ "$SWITCHOVER_CMD" = "$ROOT/scripts/planetscale-switchover.sh" ]; then
+    "$SWITCHOVER_CMD" --guard-only | tee "$gdir/guard.out" >&2
+  fi
+  prepare_target
+  since=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  sampler=$(start_sampler)
+  log "$round/$runid: $# workload(s) [$*] at $RATE req/s each, ${PRE_S}s + event + ${POST_S}s"
+  for w in "$@"; do
+    client=${w%%:*}; endpoint=${w#*:}
+    dir="$RESULTS/$round/$client/${RUN_PREFIX}$endpoint-${runid##*-}"
+    tag="$round/$runid/$endpoint/$(date +%s)"
+    rm -rf "$dir"; mkdir -p "$dir"
+    client_spec "$client"
+    local extra=()
+    [ -z "$CENV" ] || extra+=(-e "$CENV")
+    for kv in ${CLIENT_ENV:-}; do extra+=(-e "$kv"); done
+    url=$(client_url "$client" "$(url_for "$endpoint")")
+    $D run -d --name "psfs-client-$$-$i" --label "psfs.owner=$$" ${DARGS[@]+"${DARGS[@]}"} -v "$dir:/out" \
+      -e DATABASE_URL="$url" -e CLIENT="$client" -e RUN_TAG="$tag" -e RATE="$RATE" \
+      -e DURATION_S="$((PRE_S + POST_S))" -e TIMEOUT_MS="$TIMEOUT_MS" -e OUT=/out/requests.jsonl \
+      ${extra[@]+"${extra[@]}"} "$IMAGE" $ENTRY >/dev/null
+    names+=("psfs-client-$$-$i"); dirs+=("$dir"); tags+=("$client/$tag"); eps+=("$endpoint"); cls+=("$client")
+    i=$((i + 1))
+  done
+  t_start=$(now)
+  sleep "$PRE_S"
+  "$event" "$gdir"
+  for i in "${!names[@]}"; do
+    $D wait "${names[$i]}" >/dev/null || true
+    $D logs "${names[$i]}" > "${dirs[$i]}/client.log" 2>&1 || true
+    $D rm -f "${names[$i]}" >/dev/null
+  done
+  stop_sampler "$sampler" "$gdir/sessions.csv"
+  collect_local_logs "$gdir" "$since"
+  for i in "${!names[@]}"; do
+    dir=${dirs[$i]}
+    cp "$gdir"/* "$dir"/ 2>/dev/null || true
+    psql_retry "$PG_DIRECT_URL" -F, -c "select seq, count(*) from ledger where client = '${tags[$i]}' group by seq order by seq" > "$dir/ledger.csv"
+    url=$(url_for "${eps[$i]}")
+    cat > "$dir/meta.json" <<JSON
+{"round":"$round","client":"${cls[$i]}","run":"$(basename "$dir")","endpoint":"${eps[$i]}","target":"$TARGET",
+ "rate":$RATE,"pre_s":$PRE_S,"post_s":$POST_S,"timeout_ms":$TIMEOUT_MS,"client_start":$t_start,
+ "concurrent_workloads":${#names[@]},"group":"$runid","ledger_tag":"${tags[$i]}","client_env":"${CLIENT_ENV:-}",
+ "url_host":"$(echo "$url" | sed -E 's#^[^@]*@##; s#/.*##; s#\?.*##')"}
+JSON
+    python3 "$ROOT/report/report.py" run "$dir" >&2 || true
+  done
+  if [ "$COOLDOWN_S" -gt 0 ]; then log "cooldown ${COOLDOWN_S}s"; sleep "$COOLDOWN_S"; fi
+}
+
+workload_list() {
+  if [ -n "${WORKLOADS:-}" ]; then echo "$WORKLOADS"; return; fi
+  local c e out=""
+  for c in $CLIENTS; do for e in $ENDPOINTS; do out+="$c:$e "; done; done
+  echo "$out"
+}
+
+round_workloads() { # round event
+  local round=$1 event=$2 n w
+  read -r -a WL <<<"$(workload_list)"
+  if [ "$CONCURRENT" = 1 ]; then
+    RATE=${RATE:-$(( 200 / ${#WL[@]} < 50 ? 200 / ${#WL[@]} : 50 ))}
+    if [ $(( RATE * ${#WL[@]} )) -gt 200 ]; then RATE=$(( 200 / ${#WL[@]} )); log "RATE lowered to $RATE so the total stays <= 200 req/s"; fi
+  else
+    RATE=${RATE:-50}; [ "$RATE" -le 200 ] || RATE=200
+  fi
+  for n in $(seq "${RUN_START:-1}" $(( ${RUN_START:-1} + RUNS - 1 ))); do
+    if [ "$CONCURRENT" = 1 ]; then
+      run_group "$round" "${RUN_PREFIX}run-$n" "$event" "${WL[@]}"
+    else
+      for w in "${WL[@]}"; do run_group "$round" "${RUN_PREFIX}${w//:/-}-$n" "$event" "$w"; done
+    fi
+  done
+  python3 "$ROOT/report/report.py" round "$RESULTS/$round"
+}
+
+cmd=${1:-}
+export D TARGET PG_DIRECT_URL PG_POOLED_URL PG_ADMIN_URL SWITCHOVER_CMD ROOT RESULTS
+export NETARGS_STR="${DARGS[*]:-}"
+case "$cmd" in
+  build) build ;;
+  target-info)
+    mkdir -p "$RESULTS"
+    for e in direct pooled; do echo "== $e"; psqlx "$(url_for $e)" -F' | ' < "$ROOT/scripts/target-info.sql" 2>&1; done | tee "$RESULTS/target-info.txt" ;;
+  switchover) round_workloads "${ROUND:-switchover}" event_switchover ;;
+  lock-storm)
+    RUNS=${RUNS_LOCK:-1}
+    POST_S=${POST_S_LOCK:-90}
+    round_workloads "${ROUND:-lock-storm}" event_lock ;;
+  session-features) "$ROOT/scripts/rounds/session-features.sh" ;;
+  slot-failover) "$ROOT/scripts/rounds/slot-failover.sh" ;;
+  report) python3 "$ROOT/report/report.py" round "$RESULTS/${2:?round}" ;;
+  *) sed -n '2,33p' "$0"; exit 2 ;;
+esac

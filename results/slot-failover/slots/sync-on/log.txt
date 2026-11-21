@@ -1,0 +1,19 @@
+== sync-on (2026-11-21T19:50:50Z)
+standby pg2: sync_replication_slots=on hot_standby_feedback=on primary_slot_name=pg2_slot
+primary: wal_level=logical synchronized_standby_slots=pg2_slot
+create sf_failover: sf_failover|0/3034AD8
+create sf_nofailover: sf_nofailover|0/3034B10
+consume sf_failover before switchover: pre-consumed-1 pre-consumed-2 pre-consumed-3 pre-consumed-4 pre-consumed-5 
+consume sf_nofailover before switchover: pre-consumed-1 pre-consumed-2 pre-consumed-3 pre-consumed-4 pre-consumed-5 
+standby slot copy became synced and caught up after: 3
+standby slots before switchover:
+sf_failover|logical|t|t|f|f||0/3034ED8|0/3034F10
+primary slots before switchover:
+sf_failover|logical|t|f|f|f||0/3034ED8|0/3034F10
+sf_nofailover|logical|f|f|f|f||0/3034ED8|0/3034F10
+switchover took 1.983s
+new primary slots after switchover:
+sf_failover|logical|t|t|f|f||0/3034ED8|0/3034F10
+after switchover sf_failover: exists=1 changes=[post-1 post-2 post-3 post-4 post-5 pre-unconsumed-1 pre-unconsumed-2 pre-unconsumed-3 pre-unconsumed-4 pre-unconsumed-5 ] 
+after switchover sf_nofailover: exists=0 changes=[] 
+cleanup: remaining sf_ slots on primary: 0

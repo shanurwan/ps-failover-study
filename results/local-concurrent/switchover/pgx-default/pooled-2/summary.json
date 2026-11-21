@@ -1,0 +1,92 @@
+{
+ "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/pgx-default/pooled-2",
+ "round": "switchover",
+ "client": "pgx-default",
+ "run": "pooled-2",
+ "endpoint": "pooled",
+ "target": "local",
+ "rate": 25,
+ "client_env": "",
+ "event": {
+  "kind": "switchover",
+  "start": 1795291330.881,
+  "end": 1795291333.56,
+  "exit_code": 0,
+  "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+ },
+ "switchover_steps": {
+  "begin_s": 0.39,
+  "old_primary_stopped_s": 0.74,
+  "promoted_s": 1.28,
+  "direct_alias_moved_s": 1.5,
+  "pgbouncer_repointed_s": 2.67,
+  "end_s": 2.68
+ },
+ "requests": 3500,
+ "ok": 3165,
+ "errors": 335,
+ "errors_before_event": 0,
+ "errors_after_event": 335,
+ "first_error_s": 0.43,
+ "error_window_s": 13.36,
+ "recovered_s": 13.83,
+ "never_recovered": false,
+ "errors_after_recovery": 0,
+ "last_error_s": 13.79,
+ "inserts_attempted": 1750,
+ "inserts_acked": 1583,
+ "ledger_rows": 1584,
+ "acked_missing": [],
+ "duplicates": [],
+ "unacked_present": 1,
+ "late_insert_ok": 0,
+ "latency_ok_ms_p50": 1.2,
+ "latency_ok_ms_p99": 828.6,
+ "distinct_errors": [
+  {
+   "error_class": "timeout",
+   "message": "context deadline exceeded",
+   "count": 298
+  },
+  {
+   "error_class": "pg_08P01",
+   "message": "FATAL: server login has been failing, cached error: the database system is shutting down (server_login_retry) (SQLSTATE 08P01)",
+   "count": 32
+  },
+  {
+   "error_class": "timeout",
+   "message": "timeout: context deadline exceeded",
+   "count": 5
+  }
+ ],
+ "process_errors": [],
+ "sessions": {
+  "new_sessions_per_s_max_before": 2.7,
+  "new_sessions_per_s_max_during": 0.9,
+  "new_sessions_per_s_max_after": 21.5,
+  "new_sessions_per_s_mean_last_20s": 0.0,
+  "backends_max": 23,
+  "lock_waiters_max": 0,
+  "active_max": 4
+ },
+ "pgbouncer": {
+  "patterns": {
+   "server login failed": 1,
+   "pooler error": 229,
+   "client disconnect while server was not ready": 4,
+   "client unexpected eof": 10
+  },
+  "closing_reasons": {
+   "client close request": 234,
+   "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+   "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+   "client unexpected eof": 10,
+   "cancel request for idle client": 8,
+   "idle server got dirty": 4,
+   "client disconnect while server was not ready": 4,
+   "the database system is shutting down": 1,
+   "not sending cancel request for client that is now idle": 1,
+   "failed to send cancel req": 1
+  }
+ }
+}

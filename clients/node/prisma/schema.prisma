@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Ledger {
+  id     BigInt   @id @default(autoincrement())
+  client String
+  seq    BigInt
+  ts     DateTime @default(now()) @db.Timestamptz(6)
+
+  @@map("ledger")
+}

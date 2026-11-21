@@ -1,0 +1,93 @@
+{
+ "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/pgx-cancelreq/pooled-1",
+ "round": "switchover",
+ "client": "pgx-cancelreq",
+ "run": "pooled-1",
+ "endpoint": "pooled",
+ "target": "local",
+ "rate": 25,
+ "client_env": "",
+ "event": {
+  "kind": "switchover",
+  "start": 1795289551.433,
+  "end": 1795289553.293,
+  "exit_code": 0,
+  "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+ },
+ "switchover_steps": {
+  "begin_s": 0.25,
+  "old_primary_stopped_s": 0.76,
+  "promoted_s": 1.13,
+  "direct_alias_moved_s": 1.29,
+  "pgbouncer_restarted_s": 1.86,
+  "end_s": 1.86
+ },
+ "requests": 3500,
+ "ok": 3465,
+ "errors": 35,
+ "errors_before_event": 0,
+ "errors_after_event": 35,
+ "first_error_s": 0.309,
+ "error_window_s": 1.36,
+ "recovered_s": 1.709,
+ "never_recovered": false,
+ "errors_after_recovery": 0,
+ "last_error_s": 1.669,
+ "inserts_attempted": 1750,
+ "inserts_acked": 1732,
+ "ledger_rows": 1732,
+ "acked_missing": [],
+ "duplicates": [],
+ "unacked_present": 0,
+ "late_insert_ok": 0,
+ "latency_ok_ms_p50": 1.2,
+ "latency_ok_ms_p99": 6.7,
+ "distinct_errors": [
+  {
+   "error_class": "net_dial",
+   "message": "failed to connect to `user=app database=app`:\n\t192.168.64.3:6432 (pgbouncer): dial error: dial tcp 192.168.64.3:6432: connect: connection refused\n\t192.168.64.3:6432 (pgbouncer): dial error: dial tcp 192.168.64.3:6432: connect: connection refused",
+   "count": 17
+  },
+  {
+   "error_class": "timeout",
+   "message": "context deadline exceeded",
+   "count": 11
+  },
+  {
+   "error_class": "dns",
+   "message": "failed to connect to `user=app database=app`:\n\thostname resolving error: lookup pgbouncer on 127.0.0.11:53: no such host\n\tlookup pgbouncer on 127.0.0.11:53: no such host",
+   "count": 6
+  },
+  {
+   "error_class": "pg_08P01",
+   "message": "FATAL: server shutting down (SQLSTATE 08P01)",
+   "count": 1
+  }
+ ],
+ "process_errors": [],
+ "sessions": {
+  "new_sessions_per_s_max_before": 3.6,
+  "new_sessions_per_s_max_during": 1.0,
+  "new_sessions_per_s_max_after": 0.0,
+  "new_sessions_per_s_mean_last_20s": 0.0,
+  "backends_max": 20,
+  "lock_waiters_max": 0,
+  "active_max": 2
+ },
+ "pgbouncer": {
+  "patterns": {
+   "pooler error": 11,
+   "client disconnect while server was not ready": 1,
+   "client unexpected eof": 10
+  },
+  "closing_reasons": {
+   "client close request": 183,
+   "server shutting down": 11,
+   "pooler error: server shutting down": 11,
+   "client unexpected eof": 10,
+   "pause mode": 4,
+   "cancel request for idle client": 1,
+   "client disconnect while server was not ready": 1
+  }
+ }
+}

@@ -1,0 +1,88 @@
+{
+ "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/rails-activerecord/pooled-1",
+ "round": "switchover",
+ "client": "rails-activerecord",
+ "run": "pooled-1",
+ "endpoint": "pooled",
+ "target": "local",
+ "rate": 25,
+ "client_env": "",
+ "event": {
+  "kind": "switchover",
+  "start": 1795289551.433,
+  "end": 1795289553.293,
+  "exit_code": 0,
+  "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+ },
+ "switchover_steps": {
+  "begin_s": 0.25,
+  "old_primary_stopped_s": 0.76,
+  "promoted_s": 1.13,
+  "direct_alias_moved_s": 1.29,
+  "pgbouncer_restarted_s": 1.86,
+  "end_s": 1.86
+ },
+ "requests": 3500,
+ "ok": 3486,
+ "errors": 14,
+ "errors_before_event": 0,
+ "errors_after_event": 14,
+ "first_error_s": 0.312,
+ "error_window_s": 0.56,
+ "recovered_s": 0.912,
+ "never_recovered": false,
+ "errors_after_recovery": 0,
+ "last_error_s": 0.872,
+ "inserts_attempted": 1750,
+ "inserts_acked": 1742,
+ "ledger_rows": 1744,
+ "acked_missing": [],
+ "duplicates": [],
+ "unacked_present": 2,
+ "late_insert_ok": 2,
+ "latency_ok_ms_p50": 1.9,
+ "latency_ok_ms_p99": 26.4,
+ "distinct_errors": [
+  {
+   "error_class": "ActiveRecord::ConnectionNotEstablished",
+   "message": "connection to server at \"192.168.64.3\", port 6432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections?",
+   "count": 7
+  },
+  {
+   "error_class": "timeout",
+   "message": "client deadline 2000ms exceeded",
+   "count": 4
+  },
+  {
+   "error_class": "ActiveRecord::DatabaseConnectionError",
+   "message": "There is an issue connecting with your hostname: pgbouncer.\n\nPlease check your database configuration and ensure there is a valid connection to your database.",
+   "count": 3
+  }
+ ],
+ "process_errors": [],
+ "sessions": {
+  "new_sessions_per_s_max_before": 3.6,
+  "new_sessions_per_s_max_during": 1.0,
+  "new_sessions_per_s_max_after": 0.0,
+  "new_sessions_per_s_mean_last_20s": 0.0,
+  "backends_max": 20,
+  "lock_waiters_max": 0,
+  "active_max": 2
+ },
+ "pgbouncer": {
+  "patterns": {
+   "pooler error": 11,
+   "client disconnect while server was not ready": 1,
+   "client unexpected eof": 10
+  },
+  "closing_reasons": {
+   "client close request": 183,
+   "server shutting down": 11,
+   "pooler error: server shutting down": 11,
+   "client unexpected eof": 10,
+   "pause mode": 4,
+   "cancel request for idle client": 1,
+   "client disconnect while server was not ready": 1
+  }
+ }
+}

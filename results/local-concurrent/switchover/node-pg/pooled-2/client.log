@@ -1,0 +1,2 @@
+node-pg pg@8.23.1 max=10
+idle client errors: 0

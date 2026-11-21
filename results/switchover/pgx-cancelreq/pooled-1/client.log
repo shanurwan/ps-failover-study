@@ -1,0 +1,1 @@
+2026/11/21 19:20:36 pgxpool: MaxConns=12 MinConns=0 DefaultQueryExecMode=cache statement HealthCheckPeriod=1m0s cancel="cancelrequest"

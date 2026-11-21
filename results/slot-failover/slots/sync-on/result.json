@@ -1,0 +1,1 @@
+{"run":"sync-on","target":"local","sync_wait_s":"3","slots":{"sf_failover":{"exists_on_new_primary":true,"changes_after":"post-1 post-2 post-3 post-4 post-5 pre-unconsumed-1 pre-unconsumed-2 pre-unconsumed-3 pre-unconsumed-4 pre-unconsumed-5","error":""},"sf_nofailover":{"exists_on_new_primary":false,"changes_after":"","error":""}}}

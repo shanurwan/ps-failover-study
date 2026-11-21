@@ -1,0 +1,275 @@
+[
+ {
+  "dir": "results/switchover/pgx-cancelreq/pooled-1",
+  "round": "switchover",
+  "client": "pgx-cancelreq",
+  "run": "pooled-1",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 50,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795288856.53,
+   "end": 1795288858.099,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.21,
+   "old_primary_stopped_s": 0.52,
+   "promoted_s": 1.0,
+   "direct_alias_moved_s": 1.17,
+   "pgbouncer_repointed_s": 1.56,
+   "end_s": 1.57
+  },
+  "requests": 7000,
+  "ok": 6347,
+  "errors": 653,
+  "errors_before_event": 0,
+  "errors_after_event": 653,
+  "first_error_s": 0.231,
+  "error_window_s": 13.04,
+  "recovered_s": 13.291,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 13.271,
+  "inserts_attempted": 3500,
+  "inserts_acked": 3173,
+  "ledger_rows": 3173,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 0,
+  "late_insert_ok": 0,
+  "latency_ok_ms_p50": 1.2,
+  "latency_ok_ms_p99": 765.0,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "context deadline exceeded",
+    "count": 594
+   },
+   {
+    "error_class": "pg_08P01",
+    "message": "FATAL: server login has been failing, cached error: the database system is shutting down (server_login_retry) (SQLSTATE 08P01)",
+    "count": 58
+   },
+   {
+    "error_class": "timeout",
+    "message": "timeout: context deadline exceeded",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 3.8,
+   "new_sessions_per_s_max_during": 0,
+   "new_sessions_per_s_max_after": 6.8,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 7,
+   "lock_waiters_max": 0,
+   "active_max": 2
+  },
+  "pgbouncer": {
+   "patterns": {
+    "server login failed": 1,
+    "pooler error": 60,
+    "client disconnect while server was not ready": 1
+   },
+   "closing_reasons": {
+    "client close request": 147,
+    "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 60,
+    "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 60,
+    "idle server got dirty": 3,
+    "cancel request for idle client": 2,
+    "the database system is shutting down": 1,
+    "client disconnect while server was not ready": 1
+   }
+  }
+ },
+ {
+  "dir": "results/switchover/pgx-default/direct-1",
+  "round": "switchover",
+  "client": "pgx-default",
+  "run": "direct-1",
+  "endpoint": "direct",
+  "target": "local",
+  "rate": 50,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795288705.279,
+   "end": 1795288707.013,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.29,
+   "old_primary_stopped_s": 0.63,
+   "promoted_s": 1.17,
+   "direct_alias_moved_s": 1.33,
+   "pgbouncer_repointed_s": 1.73,
+   "end_s": 1.73
+  },
+  "requests": 7000,
+  "ok": 6953,
+  "errors": 47,
+  "errors_before_event": 0,
+  "errors_after_event": 47,
+  "first_error_s": 0.345,
+  "error_window_s": 0.94,
+  "recovered_s": 1.305,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 1.285,
+  "inserts_attempted": 3500,
+  "inserts_acked": 3476,
+  "ledger_rows": 3476,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 0,
+  "late_insert_ok": 0,
+  "latency_ok_ms_p50": 1.0,
+  "latency_ok_ms_p99": 3.1,
+  "distinct_errors": [
+   {
+    "error_class": "dns",
+    "message": "failed to connect to `user=app database=app`:\n\thostname resolving error: lookup pg-primary on 127.0.0.11:53: no such host\n\tlookup pg-primary on 127.0.0.11:53: no such host",
+    "count": 36
+   },
+   {
+    "error_class": "net_dial",
+    "message": "failed to connect to `user=app database=app`:\n\t192.168.64.2:5432 (pg-primary): dial error: dial tcp 192.168.64.2:5432: connect: connection refused\n\t192.168.64.2:5432 (pg-primary): dial error: dial tcp 192.168.64.2:5432: connect: connection refused",
+    "count": 7
+   },
+   {
+    "error_class": "pg_57P03",
+    "message": "failed to connect to `user=app database=app`:\n\t192.168.64.2:5432 (pg-primary): tls error: server refused TLS connection\n\t192.168.64.2:5432 (pg-primary): server error: FATAL: the database system is shutting down (SQLSTATE 57P03)",
+    "count": 2
+   },
+   {
+    "error_class": "pg_57P01",
+    "message": "FATAL: terminating connection due to administrator command (SQLSTATE 57P01)",
+    "count": 1
+   },
+   {
+    "error_class": "timeout",
+    "message": "context deadline exceeded",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 2.9,
+   "new_sessions_per_s_max_during": 0,
+   "new_sessions_per_s_max_after": 0.0,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 5,
+   "lock_waiters_max": 0,
+   "active_max": 2
+  },
+  "pgbouncer": {
+   "patterns": {},
+   "closing_reasons": {
+    "client close request": 135
+   }
+  }
+ },
+ {
+  "dir": "results/switchover/pgx-default/pooled-1",
+  "round": "switchover",
+  "client": "pgx-default",
+  "run": "pooled-1",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 50,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795288555.078,
+   "end": 1795288556.675,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.27,
+   "old_primary_stopped_s": 0.58,
+   "promoted_s": 1.09,
+   "direct_alias_moved_s": 1.25,
+   "pgbouncer_repointed_s": 1.59,
+   "end_s": 1.59
+  },
+  "requests": 7000,
+  "ok": 6338,
+  "errors": 662,
+  "errors_before_event": 0,
+  "errors_after_event": 662,
+  "first_error_s": 0.312,
+  "error_window_s": 13.22,
+  "recovered_s": 13.552,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 13.532,
+  "inserts_attempted": 3500,
+  "inserts_acked": 3169,
+  "ledger_rows": 3170,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 1,
+  "late_insert_ok": 0,
+  "latency_ok_ms_p50": 1.2,
+  "latency_ok_ms_p99": 787.4,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "context deadline exceeded",
+    "count": 601
+   },
+   {
+    "error_class": "pg_08P01",
+    "message": "FATAL: server login has been failing, cached error: the database system is shutting down (server_login_retry) (SQLSTATE 08P01)",
+    "count": 56
+   },
+   {
+    "error_class": "timeout",
+    "message": "timeout: context deadline exceeded",
+    "count": 4
+   },
+   {
+    "error_class": "timeout",
+    "message": "completed after client deadline",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 1.9,
+   "new_sessions_per_s_max_during": 0,
+   "new_sessions_per_s_max_after": 8.5,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 8,
+   "lock_waiters_max": 0,
+   "active_max": 2
+  },
+  "pgbouncer": {
+   "patterns": {
+    "server conn crashed?": 2,
+    "server login failed": 1,
+    "pooler error": 56,
+    "client disconnect while server was not ready": 2
+   },
+   "closing_reasons": {
+    "client close request": 150,
+    "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 56,
+    "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 56,
+    "cancel request for idle client": 3,
+    "server conn crashed?": 2,
+    "client disconnect while server was not ready": 2,
+    "successfully sent cancel request": 2,
+    "the database system is shutting down": 1,
+    "not sending cancel request for client that is now idle": 1,
+    "failed to send cancel req": 1
+   }
+  }
+ }
+]

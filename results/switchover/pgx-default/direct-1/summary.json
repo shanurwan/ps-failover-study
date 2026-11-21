@@ -1,0 +1,88 @@
+{
+ "dir": "results/switchover/pgx-default/direct-1",
+ "round": "switchover",
+ "client": "pgx-default",
+ "run": "direct-1",
+ "endpoint": "direct",
+ "target": "local",
+ "rate": 50,
+ "client_env": "",
+ "event": {
+  "kind": "switchover",
+  "start": 1795288705.279,
+  "end": 1795288707.013,
+  "exit_code": 0,
+  "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+ },
+ "switchover_steps": {
+  "begin_s": 0.29,
+  "old_primary_stopped_s": 0.63,
+  "promoted_s": 1.17,
+  "direct_alias_moved_s": 1.33,
+  "pgbouncer_repointed_s": 1.73,
+  "end_s": 1.73
+ },
+ "requests": 7000,
+ "ok": 6953,
+ "errors": 47,
+ "errors_before_event": 0,
+ "errors_after_event": 47,
+ "first_error_s": 0.345,
+ "error_window_s": 0.94,
+ "recovered_s": 1.305,
+ "never_recovered": false,
+ "errors_after_recovery": 0,
+ "last_error_s": 1.285,
+ "inserts_attempted": 3500,
+ "inserts_acked": 3476,
+ "ledger_rows": 3476,
+ "acked_missing": [],
+ "duplicates": [],
+ "unacked_present": 0,
+ "late_insert_ok": 0,
+ "latency_ok_ms_p50": 1.0,
+ "latency_ok_ms_p99": 3.1,
+ "distinct_errors": [
+  {
+   "error_class": "dns",
+   "message": "failed to connect to `user=app database=app`:\n\thostname resolving error: lookup pg-primary on 127.0.0.11:53: no such host\n\tlookup pg-primary on 127.0.0.11:53: no such host",
+   "count": 36
+  },
+  {
+   "error_class": "net_dial",
+   "message": "failed to connect to `user=app database=app`:\n\t192.168.64.2:5432 (pg-primary): dial error: dial tcp 192.168.64.2:5432: connect: connection refused\n\t192.168.64.2:5432 (pg-primary): dial error: dial tcp 192.168.64.2:5432: connect: connection refused",
+   "count": 7
+  },
+  {
+   "error_class": "pg_57P03",
+   "message": "failed to connect to `user=app database=app`:\n\t192.168.64.2:5432 (pg-primary): tls error: server refused TLS connection\n\t192.168.64.2:5432 (pg-primary): server error: FATAL: the database system is shutting down (SQLSTATE 57P03)",
+   "count": 2
+  },
+  {
+   "error_class": "pg_57P01",
+   "message": "FATAL: terminating connection due to administrator command (SQLSTATE 57P01)",
+   "count": 1
+  },
+  {
+   "error_class": "timeout",
+   "message": "context deadline exceeded",
+   "count": 1
+  }
+ ],
+ "process_errors": [],
+ "sessions": {
+  "new_sessions_per_s_max_before": 2.9,
+  "new_sessions_per_s_max_during": 0,
+  "new_sessions_per_s_max_after": 0.0,
+  "new_sessions_per_s_mean_last_20s": 0.0,
+  "backends_max": 5,
+  "lock_waiters_max": 0,
+  "active_max": 2
+ },
+ "pgbouncer": {
+  "patterns": {},
+  "closing_reasons": {
+   "client close request": 135
+  }
+ }
+}

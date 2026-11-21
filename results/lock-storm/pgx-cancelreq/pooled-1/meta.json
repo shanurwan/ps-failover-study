@@ -1,0 +1,4 @@
+{"round":"lock-storm","client":"pgx-cancelreq","run":"pooled-1","endpoint":"pooled","target":"local",
+ "rate":50,"pre_s":20,"post_s":90,"timeout_ms":2000,"client_start":1795290909.339,
+ "concurrent_workloads":1,"group":"pgx-cancelreq-pooled-1","ledger_tag":"pgx-cancelreq/lock-storm/pgx-cancelreq-pooled-1/pooled/1795290909","client_env":"",
+ "url_host":"pgbouncer:6432"}

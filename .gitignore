@@ -1,0 +1,9 @@
+node_modules/
+clients/node/generated/
+*.env
+.env*
+# raw server logs are large; summaries, requests.jsonl and ledger.csv are kept
+results/**/pg1.log
+results/**/pg2.log
+results/**/pgbouncer.log
+results/planetscale/

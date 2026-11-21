@@ -1,0 +1,4 @@
+{"round":"switchover","client":"pgx-default","run":"direct-2","endpoint":"direct","target":"local",
+ "rate":25,"pre_s":20,"post_s":120,"timeout_ms":2000,"client_start":1795291310.876,
+ "concurrent_workloads":8,"group":"run-2","ledger_tag":"pgx-default/switchover/run-2/direct/1795291310","client_env":"",
+ "url_host":"pg-primary:5432"}

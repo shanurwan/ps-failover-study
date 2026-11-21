@@ -1,0 +1,6 @@
+{"step":"begin","ts":1795290761.427,"old":"pg1","new":"pg2","pgb_mode":"reload"}
+{"step":"old_primary_stopped","ts":1795290761.789}
+{"step":"promoted","ts":1795290762.222}
+{"step":"direct_alias_moved","ts":1795290762.386}
+{"step":"pgbouncer_repointed","ts":1795290762.890}
+{"step":"end","ts":1795290762.892}

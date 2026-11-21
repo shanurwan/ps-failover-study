@@ -1,0 +1,428 @@
+{
+ "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/drizzle-postgresjs/pooled-1",
+ "round": "switchover",
+ "client": "drizzle-postgresjs",
+ "run": "pooled-1",
+ "endpoint": "pooled",
+ "target": "local",
+ "rate": 25,
+ "client_env": "",
+ "event": {
+  "kind": "switchover",
+  "start": 1795289551.433,
+  "end": 1795289553.293,
+  "exit_code": 0,
+  "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+ },
+ "switchover_steps": {
+  "begin_s": 0.25,
+  "old_primary_stopped_s": 0.76,
+  "promoted_s": 1.13,
+  "direct_alias_moved_s": 1.29,
+  "pgbouncer_restarted_s": 1.86,
+  "end_s": 1.86
+ },
+ "requests": 3500,
+ "ok": 3315,
+ "errors": 185,
+ "errors_before_event": 0,
+ "errors_after_event": 185,
+ "first_error_s": 0.324,
+ "error_window_s": 7.36,
+ "recovered_s": 7.724,
+ "never_recovered": false,
+ "errors_after_recovery": 0,
+ "last_error_s": 7.684,
+ "inserts_attempted": 1750,
+ "inserts_acked": 1657,
+ "ledger_rows": 1657,
+ "acked_missing": [],
+ "duplicates": [],
+ "unacked_present": 0,
+ "late_insert_ok": 0,
+ "latency_ok_ms_p50": 2,
+ "latency_ok_ms_p99": 8,
+ "distinct_errors": [
+  {
+   "error_class": "other",
+   "message": "Failed query: select \"id\" from \"ledger\" order by \"ledger\".\"id\" desc limit $1\nparams: 1 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 62
+  },
+  {
+   "error_class": "timeout",
+   "message": "client deadline 2000ms exceeded",
+   "count": 51
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: select \"id\" from \"ledger\" order by \"ledger\".\"id\" desc limit $1\nparams: 1 | cause: connect ECONNREFUSED 192.168.64.3:6432",
+   "count": 4
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,267 | cause: server shutting down",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: select \"id\" from \"ledger\" order by \"ledger\".\"id\" desc limit $1\nparams: 1 | cause: server shutting down",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,268 | cause: connect ECONNREFUSED 192.168.64.3:6432",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,269 | cause: connect ECONNREFUSED 192.168.64.3:6432",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,270 | cause: connect ECONNREFUSED 192.168.64.3:6432",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,271 | cause: connect ECONNREFUSED 192.168.64.3:6432",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,272 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,273 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,274 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,275 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,276 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,277 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,278 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,305 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,306 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,307 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,308 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,309 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,310 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,311 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,312 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,313 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,314 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,315 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,316 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,317 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,318 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,319 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,320 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,321 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,322 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,323 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,324 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,325 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,326 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,327 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,328 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,329 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,330 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,331 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,332 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,333 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,334 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,335 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,336 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,337 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,338 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,339 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,340 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,341 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,342 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,343 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,344 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,345 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,346 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,347 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,348 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,349 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,350 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,351 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,352 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,353 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,354 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,355 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,356 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,357 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,358 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  },
+  {
+   "error_class": "other",
+   "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,359 | cause: getaddrinfo ENOTFOUND pgbouncer",
+   "count": 1
+  }
+ ],
+ "process_errors": [],
+ "sessions": {
+  "new_sessions_per_s_max_before": 3.6,
+  "new_sessions_per_s_max_during": 1.0,
+  "new_sessions_per_s_max_after": 0.0,
+  "new_sessions_per_s_mean_last_20s": 0.0,
+  "backends_max": 20,
+  "lock_waiters_max": 0,
+  "active_max": 2
+ },
+ "pgbouncer": {
+  "patterns": {
+   "pooler error": 11,
+   "client disconnect while server was not ready": 1,
+   "client unexpected eof": 10
+  },
+  "closing_reasons": {
+   "client close request": 183,
+   "server shutting down": 11,
+   "pooler error: server shutting down": 11,
+   "client unexpected eof": 10,
+   "pause mode": 4,
+   "cancel request for idle client": 1,
+   "client disconnect while server was not ready": 1
+  }
+ }
+}

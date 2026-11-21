@@ -1,0 +1,1917 @@
+[
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/drizzle-postgresjs/pooled-1",
+  "round": "switchover",
+  "client": "drizzle-postgresjs",
+  "run": "pooled-1",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795289551.433,
+   "end": 1795289553.293,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.25,
+   "old_primary_stopped_s": 0.76,
+   "promoted_s": 1.13,
+   "direct_alias_moved_s": 1.29,
+   "pgbouncer_restarted_s": 1.86,
+   "end_s": 1.86
+  },
+  "requests": 3500,
+  "ok": 3315,
+  "errors": 185,
+  "errors_before_event": 0,
+  "errors_after_event": 185,
+  "first_error_s": 0.324,
+  "error_window_s": 7.36,
+  "recovered_s": 7.724,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 7.684,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1657,
+  "ledger_rows": 1657,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 0,
+  "late_insert_ok": 0,
+  "latency_ok_ms_p50": 2,
+  "latency_ok_ms_p99": 8,
+  "distinct_errors": [
+   {
+    "error_class": "other",
+    "message": "Failed query: select \"id\" from \"ledger\" order by \"ledger\".\"id\" desc limit $1\nparams: 1 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 62
+   },
+   {
+    "error_class": "timeout",
+    "message": "client deadline 2000ms exceeded",
+    "count": 51
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: select \"id\" from \"ledger\" order by \"ledger\".\"id\" desc limit $1\nparams: 1 | cause: connect ECONNREFUSED 192.168.64.3:6432",
+    "count": 4
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,267 | cause: server shutting down",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: select \"id\" from \"ledger\" order by \"ledger\".\"id\" desc limit $1\nparams: 1 | cause: server shutting down",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,268 | cause: connect ECONNREFUSED 192.168.64.3:6432",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,269 | cause: connect ECONNREFUSED 192.168.64.3:6432",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,270 | cause: connect ECONNREFUSED 192.168.64.3:6432",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,271 | cause: connect ECONNREFUSED 192.168.64.3:6432",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,272 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,273 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,274 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,275 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,276 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,277 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,278 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,305 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,306 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,307 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,308 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,309 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,310 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,311 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,312 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,313 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,314 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,315 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,316 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,317 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,318 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,319 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,320 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,321 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,322 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,323 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,324 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,325 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,326 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,327 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,328 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,329 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,330 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,331 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,332 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,333 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,334 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,335 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,336 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,337 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,338 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,339 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,340 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,341 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,342 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,343 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,344 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,345 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,346 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,347 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,348 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,349 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,350 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,351 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,352 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,353 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,354 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,355 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,356 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,357 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,358 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-1/pooled/1795289529,359 | cause: getaddrinfo ENOTFOUND pgbouncer",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 3.6,
+   "new_sessions_per_s_max_during": 1.0,
+   "new_sessions_per_s_max_after": 0.0,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 20,
+   "lock_waiters_max": 0,
+   "active_max": 2
+  },
+  "pgbouncer": {
+   "patterns": {
+    "pooler error": 11,
+    "client disconnect while server was not ready": 1,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 183,
+    "server shutting down": 11,
+    "pooler error: server shutting down": 11,
+    "client unexpected eof": 10,
+    "pause mode": 4,
+    "cancel request for idle client": 1,
+    "client disconnect while server was not ready": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/drizzle-postgresjs/pooled-2",
+  "round": "switchover",
+  "client": "drizzle-postgresjs",
+  "run": "pooled-2",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795291330.881,
+   "end": 1795291333.56,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.39,
+   "old_primary_stopped_s": 0.74,
+   "promoted_s": 1.28,
+   "direct_alias_moved_s": 1.5,
+   "pgbouncer_repointed_s": 2.67,
+   "end_s": 2.68
+  },
+  "requests": 3500,
+  "ok": 3166,
+  "errors": 334,
+  "errors_before_event": 0,
+  "errors_after_event": 334,
+  "first_error_s": 0.457,
+  "error_window_s": 13.32,
+  "recovered_s": 13.817,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 13.777,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1583,
+  "ledger_rows": 1731,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 148,
+  "late_insert_ok": 148,
+  "latency_ok_ms_p50": 2,
+  "latency_ok_ms_p99": 811,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "client deadline 2000ms exceeded",
+    "count": 296
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: select \"id\" from \"ledger\" order by \"ledger\".\"id\" desc limit $1\nparams: 1 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 18
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,265 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,266 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,267 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,268 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,269 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,270 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,271 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,272 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,273 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,274 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,275 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,276 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,277 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,278 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,279 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: select \"id\" from \"ledger\" order by \"ledger\".\"id\" desc limit $1\nparams: 1 | cause: write CONNECTION_CLOSED pgbouncer:6432",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,280 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,281 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,282 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   },
+   {
+    "error_class": "other",
+    "message": "Failed query: insert into \"ledger\" (\"id\", \"client\", \"seq\", \"ts\") values (default, $1, $2, now())\nparams: drizzle-postgresjs/switchover/run-2/pooled/1795291309,283 | cause: server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 2.7,
+   "new_sessions_per_s_max_during": 0.9,
+   "new_sessions_per_s_max_after": 21.5,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 23,
+   "lock_waiters_max": 0,
+   "active_max": 4
+  },
+  "pgbouncer": {
+   "patterns": {
+    "server login failed": 1,
+    "pooler error": 229,
+    "client disconnect while server was not ready": 4,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 234,
+    "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "client unexpected eof": 10,
+    "cancel request for idle client": 8,
+    "idle server got dirty": 4,
+    "client disconnect while server was not ready": 4,
+    "the database system is shutting down": 1,
+    "not sending cancel request for client that is now idle": 1,
+    "failed to send cancel req": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/node-pg/pooled-1",
+  "round": "switchover",
+  "client": "node-pg",
+  "run": "pooled-1",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795289551.433,
+   "end": 1795289553.293,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.25,
+   "old_primary_stopped_s": 0.76,
+   "promoted_s": 1.13,
+   "direct_alias_moved_s": 1.29,
+   "pgbouncer_restarted_s": 1.86,
+   "end_s": 1.86
+  },
+  "requests": 3500,
+  "ok": 3475,
+  "errors": 25,
+  "errors_before_event": 0,
+  "errors_after_event": 25,
+  "first_error_s": 0.325,
+  "error_window_s": 1.0,
+  "recovered_s": 1.365,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 1.325,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1738,
+  "ledger_rows": 1742,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 4,
+  "late_insert_ok": 4,
+  "latency_ok_ms_p50": 1,
+  "latency_ok_ms_p99": 9,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "client deadline 2000ms exceeded",
+    "count": 9
+   },
+   {
+    "error_class": "ECONNREFUSED",
+    "message": "connect ECONNREFUSED 192.168.64.3:6432",
+    "count": 8
+   },
+   {
+    "error_class": "ENOTFOUND",
+    "message": "getaddrinfo ENOTFOUND pgbouncer",
+    "count": 7
+   },
+   {
+    "error_class": "pg_08P01",
+    "message": "server shutting down",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 3.6,
+   "new_sessions_per_s_max_during": 1.0,
+   "new_sessions_per_s_max_after": 0.0,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 20,
+   "lock_waiters_max": 0,
+   "active_max": 2
+  },
+  "pgbouncer": {
+   "patterns": {
+    "pooler error": 11,
+    "client disconnect while server was not ready": 1,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 183,
+    "server shutting down": 11,
+    "pooler error: server shutting down": 11,
+    "client unexpected eof": 10,
+    "pause mode": 4,
+    "cancel request for idle client": 1,
+    "client disconnect while server was not ready": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/node-pg/pooled-2",
+  "round": "switchover",
+  "client": "node-pg",
+  "run": "pooled-2",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795291330.881,
+   "end": 1795291333.56,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.39,
+   "old_primary_stopped_s": 0.74,
+   "promoted_s": 1.28,
+   "direct_alias_moved_s": 1.5,
+   "pgbouncer_repointed_s": 2.67,
+   "end_s": 2.68
+  },
+  "requests": 3500,
+  "ok": 3157,
+  "errors": 343,
+  "errors_before_event": 0,
+  "errors_after_event": 343,
+  "first_error_s": 0.465,
+  "error_window_s": 13.68,
+  "recovered_s": 14.185,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 14.145,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1578,
+  "ledger_rows": 1732,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 154,
+  "late_insert_ok": 154,
+  "latency_ok_ms_p50": 1,
+  "latency_ok_ms_p99": 761,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "client deadline 2000ms exceeded",
+    "count": 308
+   },
+   {
+    "error_class": "pg_08P01",
+    "message": "server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 35
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 2.7,
+   "new_sessions_per_s_max_during": 0.9,
+   "new_sessions_per_s_max_after": 21.5,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 23,
+   "lock_waiters_max": 0,
+   "active_max": 4
+  },
+  "pgbouncer": {
+   "patterns": {
+    "server login failed": 1,
+    "pooler error": 229,
+    "client disconnect while server was not ready": 4,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 234,
+    "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "client unexpected eof": 10,
+    "cancel request for idle client": 8,
+    "idle server got dirty": 4,
+    "client disconnect while server was not ready": 4,
+    "the database system is shutting down": 1,
+    "not sending cancel request for client that is now idle": 1,
+    "failed to send cancel req": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/pgx-cancelreq/pooled-1",
+  "round": "switchover",
+  "client": "pgx-cancelreq",
+  "run": "pooled-1",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795289551.433,
+   "end": 1795289553.293,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.25,
+   "old_primary_stopped_s": 0.76,
+   "promoted_s": 1.13,
+   "direct_alias_moved_s": 1.29,
+   "pgbouncer_restarted_s": 1.86,
+   "end_s": 1.86
+  },
+  "requests": 3500,
+  "ok": 3465,
+  "errors": 35,
+  "errors_before_event": 0,
+  "errors_after_event": 35,
+  "first_error_s": 0.309,
+  "error_window_s": 1.36,
+  "recovered_s": 1.709,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 1.669,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1732,
+  "ledger_rows": 1732,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 0,
+  "late_insert_ok": 0,
+  "latency_ok_ms_p50": 1.2,
+  "latency_ok_ms_p99": 6.7,
+  "distinct_errors": [
+   {
+    "error_class": "net_dial",
+    "message": "failed to connect to `user=app database=app`:\n\t192.168.64.3:6432 (pgbouncer): dial error: dial tcp 192.168.64.3:6432: connect: connection refused\n\t192.168.64.3:6432 (pgbouncer): dial error: dial tcp 192.168.64.3:6432: connect: connection refused",
+    "count": 17
+   },
+   {
+    "error_class": "timeout",
+    "message": "context deadline exceeded",
+    "count": 11
+   },
+   {
+    "error_class": "dns",
+    "message": "failed to connect to `user=app database=app`:\n\thostname resolving error: lookup pgbouncer on 127.0.0.11:53: no such host\n\tlookup pgbouncer on 127.0.0.11:53: no such host",
+    "count": 6
+   },
+   {
+    "error_class": "pg_08P01",
+    "message": "FATAL: server shutting down (SQLSTATE 08P01)",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 3.6,
+   "new_sessions_per_s_max_during": 1.0,
+   "new_sessions_per_s_max_after": 0.0,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 20,
+   "lock_waiters_max": 0,
+   "active_max": 2
+  },
+  "pgbouncer": {
+   "patterns": {
+    "pooler error": 11,
+    "client disconnect while server was not ready": 1,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 183,
+    "server shutting down": 11,
+    "pooler error: server shutting down": 11,
+    "client unexpected eof": 10,
+    "pause mode": 4,
+    "cancel request for idle client": 1,
+    "client disconnect while server was not ready": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/pgx-cancelreq/pooled-2",
+  "round": "switchover",
+  "client": "pgx-cancelreq",
+  "run": "pooled-2",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795291330.881,
+   "end": 1795291333.56,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.39,
+   "old_primary_stopped_s": 0.74,
+   "promoted_s": 1.28,
+   "direct_alias_moved_s": 1.5,
+   "pgbouncer_repointed_s": 2.67,
+   "end_s": 2.68
+  },
+  "requests": 3500,
+  "ok": 3166,
+  "errors": 334,
+  "errors_before_event": 0,
+  "errors_after_event": 334,
+  "first_error_s": 0.454,
+  "error_window_s": 13.32,
+  "recovered_s": 13.814,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 13.774,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1583,
+  "ledger_rows": 1584,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 1,
+  "late_insert_ok": 0,
+  "latency_ok_ms_p50": 1.3,
+  "latency_ok_ms_p99": 850.1,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "context deadline exceeded",
+    "count": 297
+   },
+   {
+    "error_class": "pg_08P01",
+    "message": "FATAL: server login has been failing, cached error: the database system is shutting down (server_login_retry) (SQLSTATE 08P01)",
+    "count": 33
+   },
+   {
+    "error_class": "timeout",
+    "message": "completed after client deadline",
+    "count": 3
+   },
+   {
+    "error_class": "timeout",
+    "message": "timeout: context already done: context deadline exceeded",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 2.7,
+   "new_sessions_per_s_max_during": 0.9,
+   "new_sessions_per_s_max_after": 21.5,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 23,
+   "lock_waiters_max": 0,
+   "active_max": 4
+  },
+  "pgbouncer": {
+   "patterns": {
+    "server login failed": 1,
+    "pooler error": 229,
+    "client disconnect while server was not ready": 4,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 234,
+    "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "client unexpected eof": 10,
+    "cancel request for idle client": 8,
+    "idle server got dirty": 4,
+    "client disconnect while server was not ready": 4,
+    "the database system is shutting down": 1,
+    "not sending cancel request for client that is now idle": 1,
+    "failed to send cancel req": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/pgx-default/direct-1",
+  "round": "switchover",
+  "client": "pgx-default",
+  "run": "direct-1",
+  "endpoint": "direct",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795289551.433,
+   "end": 1795289553.293,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.25,
+   "old_primary_stopped_s": 0.76,
+   "promoted_s": 1.13,
+   "direct_alias_moved_s": 1.29,
+   "pgbouncer_restarted_s": 1.86,
+   "end_s": 1.86
+  },
+  "requests": 3500,
+  "ok": 3479,
+  "errors": 21,
+  "errors_before_event": 0,
+  "errors_after_event": 21,
+  "first_error_s": 0.383,
+  "error_window_s": 0.88,
+  "recovered_s": 1.303,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 1.263,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1739,
+  "ledger_rows": 1739,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 0,
+  "late_insert_ok": 0,
+  "latency_ok_ms_p50": 1.1,
+  "latency_ok_ms_p99": 3.2,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "context deadline exceeded",
+    "count": 9
+   },
+   {
+    "error_class": "dns",
+    "message": "failed to connect to `user=app database=app`:\n\thostname resolving error: lookup pg-primary on 127.0.0.11:53: no such host\n\tlookup pg-primary on 127.0.0.11:53: no such host",
+    "count": 7
+   },
+   {
+    "error_class": "net_dial",
+    "message": "failed to connect to `user=app database=app`:\n\t192.168.64.2:5432 (pg-primary): dial error: dial tcp 192.168.64.2:5432: connect: connection refused\n\t192.168.64.2:5432 (pg-primary): dial error: dial tcp 192.168.64.2:5432: connect: connection refused",
+    "count": 4
+   },
+   {
+    "error_class": "pg_57P01",
+    "message": "FATAL: terminating connection due to administrator command (SQLSTATE 57P01)",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 3.6,
+   "new_sessions_per_s_max_during": 1.0,
+   "new_sessions_per_s_max_after": 0.0,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 20,
+   "lock_waiters_max": 0,
+   "active_max": 2
+  },
+  "pgbouncer": {
+   "patterns": {
+    "pooler error": 11,
+    "client disconnect while server was not ready": 1,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 183,
+    "server shutting down": 11,
+    "pooler error: server shutting down": 11,
+    "client unexpected eof": 10,
+    "pause mode": 4,
+    "cancel request for idle client": 1,
+    "client disconnect while server was not ready": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/pgx-default/direct-2",
+  "round": "switchover",
+  "client": "pgx-default",
+  "run": "direct-2",
+  "endpoint": "direct",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795291330.881,
+   "end": 1795291333.56,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.39,
+   "old_primary_stopped_s": 0.74,
+   "promoted_s": 1.28,
+   "direct_alias_moved_s": 1.5,
+   "pgbouncer_repointed_s": 2.67,
+   "end_s": 2.68
+  },
+  "requests": 3500,
+  "ok": 3474,
+  "errors": 26,
+  "errors_before_event": 0,
+  "errors_after_event": 26,
+  "first_error_s": 0.466,
+  "error_window_s": 1.0,
+  "recovered_s": 1.506,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 1.466,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1737,
+  "ledger_rows": 1737,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 0,
+  "late_insert_ok": 0,
+  "latency_ok_ms_p50": 1.1,
+  "latency_ok_ms_p99": 20.8,
+  "distinct_errors": [
+   {
+    "error_class": "dns",
+    "message": "failed to connect to `user=app database=app`:\n\thostname resolving error: lookup pg-primary on 127.0.0.11:53: no such host\n\tlookup pg-primary on 127.0.0.11:53: no such host",
+    "count": 20
+   },
+   {
+    "error_class": "net_dial",
+    "message": "failed to connect to `user=app database=app`:\n\t192.168.32.2:5432 (pg-primary): dial error: dial tcp 192.168.32.2:5432: connect: connection refused\n\t192.168.32.2:5432 (pg-primary): dial error: dial tcp 192.168.32.2:5432: connect: connection refused",
+    "count": 4
+   },
+   {
+    "error_class": "pg_57P01",
+    "message": "FATAL: terminating connection due to administrator command (SQLSTATE 57P01)",
+    "count": 1
+   },
+   {
+    "error_class": "dns",
+    "message": "failed to connect to `user=app database=app`:\n\tlookup pg-primary on 127.0.0.11:53: no such host\n\t192.168.32.2:5432 (pg-primary): tls error: server refused TLS connection",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 2.7,
+   "new_sessions_per_s_max_during": 0.9,
+   "new_sessions_per_s_max_after": 21.5,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 23,
+   "lock_waiters_max": 0,
+   "active_max": 4
+  },
+  "pgbouncer": {
+   "patterns": {
+    "server login failed": 1,
+    "pooler error": 229,
+    "client disconnect while server was not ready": 4,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 234,
+    "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "client unexpected eof": 10,
+    "cancel request for idle client": 8,
+    "idle server got dirty": 4,
+    "client disconnect while server was not ready": 4,
+    "the database system is shutting down": 1,
+    "not sending cancel request for client that is now idle": 1,
+    "failed to send cancel req": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/pgx-default/pooled-1",
+  "round": "switchover",
+  "client": "pgx-default",
+  "run": "pooled-1",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795289551.433,
+   "end": 1795289553.293,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.25,
+   "old_primary_stopped_s": 0.76,
+   "promoted_s": 1.13,
+   "direct_alias_moved_s": 1.29,
+   "pgbouncer_restarted_s": 1.86,
+   "end_s": 1.86
+  },
+  "requests": 3500,
+  "ok": 3430,
+  "errors": 70,
+  "errors_before_event": 0,
+  "errors_after_event": 70,
+  "first_error_s": 0.342,
+  "error_window_s": 2.76,
+  "recovered_s": 3.142,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 3.102,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1715,
+  "ledger_rows": 1715,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 0,
+  "late_insert_ok": 0,
+  "latency_ok_ms_p50": 1.3,
+  "latency_ok_ms_p99": 632.3,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "context deadline exceeded",
+    "count": 54
+   },
+   {
+    "error_class": "net_dial",
+    "message": "failed to connect to `user=app database=app`:\n\t192.168.64.3:6432 (pgbouncer): dial error: dial tcp 192.168.64.3:6432: connect: connection refused\n\t192.168.64.3:6432 (pgbouncer): dial error: dial tcp 192.168.64.3:6432: connect: connection refused",
+    "count": 8
+   },
+   {
+    "error_class": "dns",
+    "message": "failed to connect to `user=app database=app`:\n\thostname resolving error: lookup pgbouncer on 127.0.0.11:53: no such host\n\tlookup pgbouncer on 127.0.0.11:53: no such host",
+    "count": 6
+   },
+   {
+    "error_class": "pg_08P01",
+    "message": "FATAL: server shutting down (SQLSTATE 08P01)",
+    "count": 1
+   },
+   {
+    "error_class": "timeout",
+    "message": "timeout: context deadline exceeded",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 3.6,
+   "new_sessions_per_s_max_during": 1.0,
+   "new_sessions_per_s_max_after": 0.0,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 20,
+   "lock_waiters_max": 0,
+   "active_max": 2
+  },
+  "pgbouncer": {
+   "patterns": {
+    "pooler error": 11,
+    "client disconnect while server was not ready": 1,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 183,
+    "server shutting down": 11,
+    "pooler error: server shutting down": 11,
+    "client unexpected eof": 10,
+    "pause mode": 4,
+    "cancel request for idle client": 1,
+    "client disconnect while server was not ready": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/pgx-default/pooled-2",
+  "round": "switchover",
+  "client": "pgx-default",
+  "run": "pooled-2",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795291330.881,
+   "end": 1795291333.56,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.39,
+   "old_primary_stopped_s": 0.74,
+   "promoted_s": 1.28,
+   "direct_alias_moved_s": 1.5,
+   "pgbouncer_repointed_s": 2.67,
+   "end_s": 2.68
+  },
+  "requests": 3500,
+  "ok": 3165,
+  "errors": 335,
+  "errors_before_event": 0,
+  "errors_after_event": 335,
+  "first_error_s": 0.43,
+  "error_window_s": 13.36,
+  "recovered_s": 13.83,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 13.79,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1583,
+  "ledger_rows": 1584,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 1,
+  "late_insert_ok": 0,
+  "latency_ok_ms_p50": 1.2,
+  "latency_ok_ms_p99": 828.6,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "context deadline exceeded",
+    "count": 298
+   },
+   {
+    "error_class": "pg_08P01",
+    "message": "FATAL: server login has been failing, cached error: the database system is shutting down (server_login_retry) (SQLSTATE 08P01)",
+    "count": 32
+   },
+   {
+    "error_class": "timeout",
+    "message": "timeout: context deadline exceeded",
+    "count": 5
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 2.7,
+   "new_sessions_per_s_max_during": 0.9,
+   "new_sessions_per_s_max_after": 21.5,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 23,
+   "lock_waiters_max": 0,
+   "active_max": 4
+  },
+  "pgbouncer": {
+   "patterns": {
+    "server login failed": 1,
+    "pooler error": 229,
+    "client disconnect while server was not ready": 4,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 234,
+    "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "client unexpected eof": 10,
+    "cancel request for idle client": 8,
+    "idle server got dirty": 4,
+    "client disconnect while server was not ready": 4,
+    "the database system is shutting down": 1,
+    "not sending cancel request for client that is now idle": 1,
+    "failed to send cancel req": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/prisma/pooled-1",
+  "round": "switchover",
+  "client": "prisma",
+  "run": "pooled-1",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795289551.433,
+   "end": 1795289553.293,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.25,
+   "old_primary_stopped_s": 0.76,
+   "promoted_s": 1.13,
+   "direct_alias_moved_s": 1.29,
+   "pgbouncer_restarted_s": 1.86,
+   "end_s": 1.86
+  },
+  "requests": 3500,
+  "ok": 3475,
+  "errors": 25,
+  "errors_before_event": 0,
+  "errors_after_event": 25,
+  "first_error_s": 0.327,
+  "error_window_s": 1.0,
+  "recovered_s": 1.367,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 1.327,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1738,
+  "ledger_rows": 1742,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 4,
+  "late_insert_ok": 4,
+  "latency_ok_ms_p50": 2,
+  "latency_ok_ms_p99": 12,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "client deadline 2000ms exceeded",
+    "count": 9
+   },
+   {
+    "error_class": "pg_P1001",
+    "message": "\nInvalid `prisma.ledger.create()` invocation:\n\n\nCan't reach database server at 192.168.64.3:6432",
+    "count": 4
+   },
+   {
+    "error_class": "pg_P1001",
+    "message": "\nInvalid `prisma.ledger.findFirst()` invocation:\n\n\nCan't reach database server at 192.168.64.3:6432",
+    "count": 4
+   },
+   {
+    "error_class": "pg_P1001",
+    "message": "\nInvalid `prisma.ledger.findFirst()` invocation:\n\n\nCan't reach database server at pgbouncer",
+    "count": 4
+   },
+   {
+    "error_class": "pg_P1001",
+    "message": "\nInvalid `prisma.ledger.create()` invocation:\n\n\nCan't reach database server at pgbouncer",
+    "count": 3
+   },
+   {
+    "error_class": "pg_P2039",
+    "message": "\nInvalid `prisma.ledger.findFirst()` invocation:\n\n\nDatabase error. Code: `08P01`. Message: `server shutting down`",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 3.6,
+   "new_sessions_per_s_max_during": 1.0,
+   "new_sessions_per_s_max_after": 0.0,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 20,
+   "lock_waiters_max": 0,
+   "active_max": 2
+  },
+  "pgbouncer": {
+   "patterns": {
+    "pooler error": 11,
+    "client disconnect while server was not ready": 1,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 183,
+    "server shutting down": 11,
+    "pooler error: server shutting down": 11,
+    "client unexpected eof": 10,
+    "pause mode": 4,
+    "cancel request for idle client": 1,
+    "client disconnect while server was not ready": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/prisma/pooled-2",
+  "round": "switchover",
+  "client": "prisma",
+  "run": "pooled-2",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795291330.881,
+   "end": 1795291333.56,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.39,
+   "old_primary_stopped_s": 0.74,
+   "promoted_s": 1.28,
+   "direct_alias_moved_s": 1.5,
+   "pgbouncer_repointed_s": 2.67,
+   "end_s": 2.68
+  },
+  "requests": 3500,
+  "ok": 3154,
+  "errors": 346,
+  "errors_before_event": 0,
+  "errors_after_event": 346,
+  "first_error_s": 0.435,
+  "error_window_s": 13.8,
+  "recovered_s": 14.275,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 14.235,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1577,
+  "ledger_rows": 1732,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 155,
+  "late_insert_ok": 155,
+  "latency_ok_ms_p50": 2,
+  "latency_ok_ms_p99": 784,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "client deadline 2000ms exceeded",
+    "count": 311
+   },
+   {
+    "error_class": "pg_P2039",
+    "message": "\nInvalid `prisma.ledger.create()` invocation:\n\n\nDatabase error. Code: `08P01`. Message: `server login has been failing, cached error: the database system is shutting down (server_login_retry)`",
+    "count": 18
+   },
+   {
+    "error_class": "pg_P2039",
+    "message": "\nInvalid `prisma.ledger.findFirst()` invocation:\n\n\nDatabase error. Code: `08P01`. Message: `server login has been failing, cached error: the database system is shutting down (server_login_retry)`",
+    "count": 17
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 2.7,
+   "new_sessions_per_s_max_during": 0.9,
+   "new_sessions_per_s_max_after": 21.5,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 23,
+   "lock_waiters_max": 0,
+   "active_max": 4
+  },
+  "pgbouncer": {
+   "patterns": {
+    "server login failed": 1,
+    "pooler error": 229,
+    "client disconnect while server was not ready": 4,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 234,
+    "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "client unexpected eof": 10,
+    "cancel request for idle client": 8,
+    "idle server got dirty": 4,
+    "client disconnect while server was not ready": 4,
+    "the database system is shutting down": 1,
+    "not sending cancel request for client that is now idle": 1,
+    "failed to send cancel req": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/rails-activerecord/pooled-1",
+  "round": "switchover",
+  "client": "rails-activerecord",
+  "run": "pooled-1",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795289551.433,
+   "end": 1795289553.293,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.25,
+   "old_primary_stopped_s": 0.76,
+   "promoted_s": 1.13,
+   "direct_alias_moved_s": 1.29,
+   "pgbouncer_restarted_s": 1.86,
+   "end_s": 1.86
+  },
+  "requests": 3500,
+  "ok": 3486,
+  "errors": 14,
+  "errors_before_event": 0,
+  "errors_after_event": 14,
+  "first_error_s": 0.312,
+  "error_window_s": 0.56,
+  "recovered_s": 0.912,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 0.872,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1742,
+  "ledger_rows": 1744,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 2,
+  "late_insert_ok": 2,
+  "latency_ok_ms_p50": 1.9,
+  "latency_ok_ms_p99": 26.4,
+  "distinct_errors": [
+   {
+    "error_class": "ActiveRecord::ConnectionNotEstablished",
+    "message": "connection to server at \"192.168.64.3\", port 6432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections?",
+    "count": 7
+   },
+   {
+    "error_class": "timeout",
+    "message": "client deadline 2000ms exceeded",
+    "count": 4
+   },
+   {
+    "error_class": "ActiveRecord::DatabaseConnectionError",
+    "message": "There is an issue connecting with your hostname: pgbouncer.\n\nPlease check your database configuration and ensure there is a valid connection to your database.",
+    "count": 3
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 3.6,
+   "new_sessions_per_s_max_during": 1.0,
+   "new_sessions_per_s_max_after": 0.0,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 20,
+   "lock_waiters_max": 0,
+   "active_max": 2
+  },
+  "pgbouncer": {
+   "patterns": {
+    "pooler error": 11,
+    "client disconnect while server was not ready": 1,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 183,
+    "server shutting down": 11,
+    "pooler error: server shutting down": 11,
+    "client unexpected eof": 10,
+    "pause mode": 4,
+    "cancel request for idle client": 1,
+    "client disconnect while server was not ready": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/rails-activerecord/pooled-2",
+  "round": "switchover",
+  "client": "rails-activerecord",
+  "run": "pooled-2",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795291330.881,
+   "end": 1795291333.56,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.39,
+   "old_primary_stopped_s": 0.74,
+   "promoted_s": 1.28,
+   "direct_alias_moved_s": 1.5,
+   "pgbouncer_repointed_s": 2.67,
+   "end_s": 2.68
+  },
+  "requests": 3500,
+  "ok": 3157,
+  "errors": 343,
+  "errors_before_event": 0,
+  "errors_after_event": 343,
+  "first_error_s": 0.458,
+  "error_window_s": 13.68,
+  "recovered_s": 14.178,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 14.138,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1578,
+  "ledger_rows": 1620,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 42,
+  "late_insert_ok": 42,
+  "latency_ok_ms_p50": 2.4,
+  "latency_ok_ms_p99": 839.7,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "client deadline 2000ms exceeded",
+    "count": 332
+   },
+   {
+    "error_class": "ActiveRecord::ConnectionFailed",
+    "message": "PQconsumeInput() FATAL:  server login has been failing, cached error: the database system is shutting down (server_login_retry)\nserver closed the connection unexpectedly\n\tThis probably means the server terminated abnormally\n\tbefore or while processing the request.",
+    "count": 11
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 2.7,
+   "new_sessions_per_s_max_during": 0.9,
+   "new_sessions_per_s_max_after": 21.5,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 23,
+   "lock_waiters_max": 0,
+   "active_max": 4
+  },
+  "pgbouncer": {
+   "patterns": {
+    "server login failed": 1,
+    "pooler error": 229,
+    "client disconnect while server was not ready": 4,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 234,
+    "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "client unexpected eof": 10,
+    "cancel request for idle client": 8,
+    "idle server got dirty": 4,
+    "client disconnect while server was not ready": 4,
+    "the database system is shutting down": 1,
+    "not sending cancel request for client that is now idle": 1,
+    "failed to send cancel req": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/sqlalchemy-psycopg/pooled-1",
+  "round": "switchover",
+  "client": "sqlalchemy-psycopg",
+  "run": "pooled-1",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795289551.433,
+   "end": 1795289553.293,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.25,
+   "old_primary_stopped_s": 0.76,
+   "promoted_s": 1.13,
+   "direct_alias_moved_s": 1.29,
+   "pgbouncer_restarted_s": 1.86,
+   "end_s": 1.86
+  },
+  "requests": 3500,
+  "ok": 3421,
+  "errors": 79,
+  "errors_before_event": 0,
+  "errors_after_event": 79,
+  "first_error_s": 0.303,
+  "error_window_s": 3.12,
+  "recovered_s": 3.463,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 3.423,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1711,
+  "ledger_rows": 1734,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 23,
+  "late_insert_ok": 23,
+  "latency_ok_ms_p50": 2.2,
+  "latency_ok_ms_p99": 663.3,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "client deadline 2000ms exceeded",
+    "count": 61
+   },
+   {
+    "error_class": "OperationalError",
+    "message": "connection failed: connection to server at \"192.168.64.3\", port 6432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections?",
+    "count": 9
+   },
+   {
+    "error_class": "OperationalError",
+    "message": "failed to resolve host 'pgbouncer': [Errno -2] Name or service not known",
+    "count": 8
+   },
+   {
+    "error_class": "pg_08P01",
+    "message": "server shutting down",
+    "count": 1
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 3.6,
+   "new_sessions_per_s_max_during": 1.0,
+   "new_sessions_per_s_max_after": 0.0,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 20,
+   "lock_waiters_max": 0,
+   "active_max": 2
+  },
+  "pgbouncer": {
+   "patterns": {
+    "pooler error": 11,
+    "client disconnect while server was not ready": 1,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 183,
+    "server shutting down": 11,
+    "pooler error: server shutting down": 11,
+    "client unexpected eof": 10,
+    "pause mode": 4,
+    "cancel request for idle client": 1,
+    "client disconnect while server was not ready": 1
+   }
+  }
+ },
+ {
+  "dir": "/home/wan/ps-failover-study/results/local-concurrent/switchover/sqlalchemy-psycopg/pooled-2",
+  "round": "switchover",
+  "client": "sqlalchemy-psycopg",
+  "run": "pooled-2",
+  "endpoint": "pooled",
+  "target": "local",
+  "rate": 25,
+  "client_env": "",
+  "event": {
+   "kind": "switchover",
+   "start": 1795291330.881,
+   "end": 1795291333.56,
+   "exit_code": 0,
+   "cmd": "/home/wan/ps-failover-study/scripts/local-switchover.sh"
+  },
+  "switchover_steps": {
+   "begin_s": 0.39,
+   "old_primary_stopped_s": 0.74,
+   "promoted_s": 1.28,
+   "direct_alias_moved_s": 1.5,
+   "pgbouncer_repointed_s": 2.67,
+   "end_s": 2.68
+  },
+  "requests": 3500,
+  "ok": 3162,
+  "errors": 338,
+  "errors_before_event": 0,
+  "errors_after_event": 338,
+  "first_error_s": 0.434,
+  "error_window_s": 13.48,
+  "recovered_s": 13.954,
+  "never_recovered": false,
+  "errors_after_recovery": 0,
+  "last_error_s": 13.914,
+  "inserts_attempted": 1750,
+  "inserts_acked": 1581,
+  "ledger_rows": 1734,
+  "acked_missing": [],
+  "duplicates": [],
+  "unacked_present": 153,
+  "late_insert_ok": 153,
+  "latency_ok_ms_p50": 2.4,
+  "latency_ok_ms_p99": 809.7,
+  "distinct_errors": [
+   {
+    "error_class": "timeout",
+    "message": "client deadline 2000ms exceeded",
+    "count": 308
+   },
+   {
+    "error_class": "pg_08P01",
+    "message": "server login has been failing, cached error: the database system is shutting down (server_login_retry)",
+    "count": 30
+   }
+  ],
+  "process_errors": [],
+  "sessions": {
+   "new_sessions_per_s_max_before": 2.7,
+   "new_sessions_per_s_max_during": 0.9,
+   "new_sessions_per_s_max_after": 21.5,
+   "new_sessions_per_s_mean_last_20s": 0.0,
+   "backends_max": 23,
+   "lock_waiters_max": 0,
+   "active_max": 4
+  },
+  "pgbouncer": {
+   "patterns": {
+    "server login failed": 1,
+    "pooler error": 229,
+    "client disconnect while server was not ready": 4,
+    "client unexpected eof": 10
+   },
+   "closing_reasons": {
+    "client close request": 234,
+    "server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "pooler error: server login has been failing, cached error: the database system is shutting down (server_login_retry)": 229,
+    "client unexpected eof": 10,
+    "cancel request for idle client": 8,
+    "idle server got dirty": 4,
+    "client disconnect while server was not ready": 4,
+    "the database system is shutting down": 1,
+    "not sending cancel request for client that is now idle": 1,
+    "failed to send cancel req": 1
+   }
+  }
+ }
+]

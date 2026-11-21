@@ -1,0 +1,190 @@
+{
+ "endpoint": "direct",
+ "mode": "quiet",
+ "psycopg": "3.3.9",
+ "tests": {
+  "set_session": {
+   "set_results": [
+    {
+     "ok": true,
+     "rows": null
+    },
+    {
+     "ok": true,
+     "rows": null
+    },
+    {
+     "ok": true,
+     "rows": null
+    }
+   ],
+   "A_kept_setting": 10,
+   "A_kept_search_path": 10,
+   "A_kept_application_name": 10,
+   "B_saw_A_statement_timeout": 0,
+   "B_saw_A_search_path": 0,
+   "B_saw_A_application_name": 0,
+   "of": 10,
+   "A_distinct_backends": 1,
+   "A_values_sample": [
+    [
+     "4321ms",
+     "sf_schema, public",
+     "A-renamed"
+    ],
+    [
+     "4321ms",
+     "sf_schema, public",
+     "A-renamed"
+    ],
+    [
+     "4321ms",
+     "sf_schema, public",
+     "A-renamed"
+    ]
+   ],
+   "B_values_sample": [
+    [
+     "0",
+     "\"$user\", public",
+     "B"
+    ],
+    [
+     "0",
+     "\"$user\", public",
+     "B"
+    ],
+    [
+     "0",
+     "\"$user\", public",
+     "B"
+    ]
+   ],
+   "notices_A": [],
+   "notices_B": []
+  },
+  "advisory_lock": {
+   "A_lock": {
+    "ok": true,
+    "rows": [
+     [
+      ""
+     ]
+    ]
+   },
+   "B_try_while_A_holds_got_lock": 0,
+   "of": 10,
+   "A_unlock": {
+    "ok": true,
+    "rows": [
+     [
+      "True"
+     ]
+    ]
+   },
+   "B_try_after_A_unlocked": {
+    "ok": true,
+    "rows": [
+     [
+      "True"
+     ]
+    ]
+   },
+   "advisory_locks_still_held_after_test": {
+    "ok": true,
+    "rows": [
+     [
+      "0"
+     ]
+    ]
+   },
+   "notices_A": [],
+   "notices_B": []
+  },
+  "listen_notify": {
+   "listen": {
+    "ok": true,
+    "rows": null
+   },
+   "notify": [
+    {
+     "ok": true,
+     "rows": null
+    },
+    {
+     "ok": true,
+     "rows": null
+    },
+    {
+     "ok": true,
+     "rows": null
+    }
+   ],
+   "A_received": [
+    "hello-0",
+    "hello-1",
+    "hello-2"
+   ],
+   "expected": 3,
+   "notices_A": [],
+   "notices_B": []
+  },
+  "temp_table": {
+   "A_create": {
+    "ok": true,
+    "rows": null
+   },
+   "A_insert_errors": [],
+   "A_insert_failed": 0,
+   "A_select_counts": [
+    "10",
+    "10",
+    "10",
+    "10",
+    "10",
+    "10",
+    "10",
+    "10",
+    "10",
+    "10"
+   ],
+   "of": 10,
+   "B_create_same_name": {
+    "ok": true,
+    "rows": null
+   },
+   "B_select": {
+    "ok": true,
+    "rows": [
+     [
+      "0"
+     ]
+    ]
+   },
+   "notices_A": [],
+   "notices_B": []
+  },
+  "sql_prepare": {
+   "A_prepare": {
+    "ok": true,
+    "rows": null
+   },
+   "A_execute_failed": 0,
+   "A_execute_errors": [],
+   "of": 10,
+   "B_prepare_same_name": {
+    "ok": true,
+    "rows": null
+   },
+   "notices_A": [],
+   "notices_B": []
+  },
+  "protocol_prepare": {
+   "ok": 10,
+   "of": 10,
+   "errors": [],
+   "notices_A": [],
+   "notices_B": []
+  }
+ }
+}
