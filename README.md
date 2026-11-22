@@ -1,5 +1,7 @@
 # ps-failover-study
 
+**Interactive summary: https://shanurwan.github.io/ps-failover-study/**
+
 A reproducible harness to see how common Postgres client libraries behave on
 PlanetScale Postgres during a primary switchover, and through its built-in
 PgBouncer. PlanetScale's PgBouncer runs in transaction pooling mode only, on

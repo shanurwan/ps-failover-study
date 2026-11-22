@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postgres Switchover Study</title>
+<meta name="description" content="What a PlanetScale Postgres switchover looks like from seven client stacks: measured lost writes, recovery time, late commits, pooling limits and logical slots.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #fbfbfa; --surface: #ffffff; --surface-2: #f4f4f2; --border: #e6e5e1; --border-strong: #d4d3ce;
+  --text: #0f0f0e; --text-2: #4f4e4a; --text-3: #7a7974;
+  --accent: #2a78d6; --accent-ink: #1c5cab; --accent-soft: #e8f1fc;
+  --good: #0a7d3b; --good-soft: #e6f4ec; --warn: #a15c00; --warn-soft: #fbf1e1; --bad: #c0352f; --bad-soft: #fbe9e8;
+  --hero-1: #0b1220; --hero-2: #111a2e; --hero-text: #eef2f8; --hero-muted: #a9b4c7;
+  --s0: #f1f4f8; --s1: #cde2fb; --s2: #9ec5f4; --s3: #6da7ec; --s4: #3987e5; --s5: #256abf; --s6: #184f95; --s7: #0d366b;
+  --bar: #2a78d6; --bar-muted: #b7d3f6; --marker: #eb6834;
+  --shadow: 0 1px 2px rgba(16,24,40,.04), 0 4px 16px rgba(16,24,40,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0d0d0c; --surface: #161615; --surface-2: #1d1d1b; --border: #2a2a27; --border-strong: #3a3a36;
+    --text: #f0efec; --text-2: #c3c2b7; --text-3: #8e8d85;
+    --accent: #5598e7; --accent-ink: #86b6ef; --accent-soft: #14243a;
+    --good: #4cc27a; --good-soft: #12291b; --warn: #e0a23a; --warn-soft: #2d2210; --bad: #ef7a75; --bad-soft: #321716;
+    --s0: #1d1f23; --s1: #10284a; --s2: #163a6b; --s3: #1f5296; --s4: #2f6fc2; --s5: #4a8de0; --s6: #7aaeee; --s7: #b7d3f6;
+    --bar: #3987e5; --bar-muted: #23436e; --marker: #d95926;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d0d0c; --surface: #161615; --surface-2: #1d1d1b; --border: #2a2a27; --border-strong: #3a3a36;
+  --text: #f0efec; --text-2: #c3c2b7; --text-3: #8e8d85;
+  --accent: #5598e7; --accent-ink: #86b6ef; --accent-soft: #14243a;
+  --good: #4cc27a; --good-soft: #12291b; --warn: #e0a23a; --warn-soft: #2d2210; --bad: #ef7a75; --bad-soft: #321716;
+  --s0: #1d1f23; --s1: #10284a; --s2: #163a6b; --s3: #1f5296; --s4: #2f6fc2; --s5: #4a8de0; --s6: #7aaeee; --s7: #b7d3f6;
+  --bar: #3987e5; --bar-muted: #23436e; --marker: #d95926;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.3);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code, .mono { font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace; font-size: .86em; }
+code { background: var(--surface-2); border: 1px solid var(--border); padding: 1px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+@media (max-width: 640px) { .wrap { padding: 0 16px; } }
+
+/* nav */
+.nav { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--hero-1) 92%, transparent); backdrop-filter: saturate(160%) blur(10px); border-bottom: 1px solid rgba(255,255,255,.08); }
+.nav .wrap { display: flex; align-items: center; gap: 24px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--hero-text); font-weight: 700; letter-spacing: -.01em; }
+.brand:hover { text-decoration: none; }
+.logo { width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, #3987e5, #6250d6); display: grid; place-items: center; }
+.nav-links { display: flex; gap: 22px; margin-left: auto; align-items: center; }
+.nav-links a { color: var(--hero-muted); font-size: 14px; font-weight: 500; }
+.nav-links a:hover { color: var(--hero-text); text-decoration: none; }
+.theme-btn { background: transparent; border: 1px solid rgba(255,255,255,.18); color: var(--hero-text); border-radius: 8px; width: 34px; height: 34px; cursor: pointer; display: grid; place-items: center; }
+@media (max-width: 820px) { .nav-links a.hide-sm { display: none; } }
+
+/* hero */
+.hero { background: radial-gradient(1200px 500px at 80% -10%, rgba(57,135,229,.28), transparent 60%), radial-gradient(800px 400px at 0% 0%, rgba(98,80,214,.22), transparent 60%), linear-gradient(180deg, var(--hero-1), var(--hero-2)); color: var(--hero-text); padding: 84px 0 120px; position: relative; overflow: hidden; }
+.hero::after { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px); background-size: 44px 44px; mask-image: linear-gradient(180deg, #000 0%, transparent 85%); pointer-events: none; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #bcd5f5; background: rgba(57,135,229,.14); border: 1px solid rgba(57,135,229,.35); padding: 5px 12px; border-radius: 999px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #4cc27a; box-shadow: 0 0 0 3px rgba(76,194,122,.2); }
+.hero h1 { font-size: clamp(34px, 5.4vw, 60px); line-height: 1.06; letter-spacing: -.035em; margin: 22px 0 18px; font-weight: 800; max-width: 900px; }
+.hero h1 .grad { background: linear-gradient(90deg, #86b6ef, #b3a9f2); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p.lead { font-size: clamp(17px, 2vw, 20px); color: var(--hero-muted); max-width: 720px; margin: 0 0 32px; }
+.cta { display: flex; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 10px; font-weight: 600; font-size: 15px; border: 1px solid transparent; transition: transform .15s, background .15s; }
+.btn:hover { text-decoration: none; transform: translateY(-1px); }
+.btn-primary { background: #f0f4fa; color: #0b1220; }
+.btn-ghost { color: var(--hero-text); border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.04); }
+.meta { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--hero-muted); font-size: 14px; position: relative; z-index: 1; }
+.meta b { color: var(--hero-text); font-weight: 600; }
+
+/* kpis */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: -64px; position: relative; z-index: 2; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px 22px 20px; box-shadow: var(--shadow); }
+.kpi .v { font-size: 38px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
+.kpi .l { font-weight: 600; margin-top: 6px; }
+.kpi .d { color: var(--text-2); font-size: 14px; margin-top: 4px; line-height: 1.45; }
+.tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+.tag.good { color: var(--good); background: var(--good-soft); }
+.tag.warn { color: var(--warn); background: var(--warn-soft); }
+.tag.bad { color: var(--bad); background: var(--bad-soft); }
+.tag.info { color: var(--accent-ink); background: var(--accent-soft); }
+@media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .kpis { grid-template-columns: 1fr; } }
+
+/* sections */
+section.block { padding: 88px 0 0; }
+.sec-head { max-width: 760px; margin-bottom: 28px; }
+.kicker { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h2 { font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -.025em; line-height: 1.15; margin: 10px 0 12px; font-weight: 750; }
+.sec-head p { color: var(--text-2); font-size: 17px; margin: 0; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); }
+.card-pad { padding: 24px; }
+@media (max-width: 640px) { .card-pad { padding: 18px; } }
+
+/* controls */
+.seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; color: var(--text-2); font: 600 13px Inter, sans-serif; padding: 7px 12px; border-radius: 7px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.chart-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.chart-title { font-weight: 700; font-size: 17px; }
+.chart-sub { color: var(--text-2); font-size: 14px; margin-top: 2px; }
+.legend { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--text-2); margin-top: 14px; }
+.ramp { display: inline-flex; border-radius: 4px; overflow: hidden; }
+.ramp i { width: 18px; height: 10px; display: block; }
+.swatch-line { display: inline-block; width: 16px; height: 0; border-top: 2px dashed var(--marker); vertical-align: middle; }
+svg text { font-family: Inter, sans-serif; }
+.chart-wrap { position: relative; width: 100%; }
+.tip { position: fixed; pointer-events: none; z-index: 50; background: var(--surface); color: var(--text); border: 1px solid var(--border-strong); box-shadow: var(--shadow); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.45; min-width: 170px; opacity: 0; transition: opacity .08s; }
+.tip b { font-weight: 700; }
+.tip .row { display: flex; justify-content: space-between; gap: 16px; color: var(--text-2); }
+.tip .row span:last-child { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.note { font-size: 14px; color: var(--text-2); margin-top: 16px; padding: 12px 14px; background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border); }
+
+.grid-2 { display: grid; grid-template-columns: 1.15fr .85fr; gap: 20px; }
+@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+.callout h3 { margin: 0 0 8px; font-size: 18px; }
+.callout p { margin: 0 0 12px; color: var(--text-2); }
+.callout ul { margin: 0; padding-left: 18px; color: var(--text-2); }
+.callout li { margin: 6px 0; }
+
+/* tickets */
+.tickets { display: grid; gap: 12px; }
+.ticket { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+.ticket[open] { border-color: var(--border-strong); box-shadow: var(--shadow); }
+.ticket summary { list-style: none; cursor: pointer; padding: 18px 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; }
+.ticket summary::-webkit-details-marker { display: none; }
+.tno { font: 600 12px "JetBrains Mono", monospace; color: var(--text-3); background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 3px 7px; }
+.tq { font-weight: 600; font-size: 16px; }
+.tq small { display: block; color: var(--text-3); font-weight: 500; font-size: 13px; margin-top: 2px; }
+.chev { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: var(--text-3); transition: transform .2s; }
+.ticket[open] .chev { transform: rotate(180deg); }
+.tbody { padding: 0 20px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.tcol { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; font-size: 14.5px; color: var(--text-2); }
+.tcol h4 { margin: 0 0 6px; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); }
+.tcol ul { margin: 0; padding-left: 16px; }
+.tcol li { margin: 4px 0; }
+@media (max-width: 820px) { .tbody { grid-template-columns: 1fr; } .ticket summary { grid-template-columns: 1fr auto; } .tno { display: none; } }
+
+/* matrix */
+.matrix { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14.5px; }
+.matrix th { text-align: left; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); font-weight: 700; padding: 0 14px 10px; border-bottom: 1px solid var(--border); }
+.matrix td { padding: 14px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.matrix tr:last-child td { border-bottom: 0; }
+.matrix td:first-child { color: var(--text); font-weight: 600; white-space: nowrap; }
+.matrix .det { display: block; margin-top: 6px; font-size: 13.5px; }
+.scroll-x { overflow-x: auto; }
+@media (max-width: 700px) { .matrix td:first-child { white-space: normal; } }
+
+/* slots */
+.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.slot { padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.slot h3 { margin: 0; font-size: 16px; }
+.slot p { margin: 0; color: var(--text-2); font-size: 14.5px; }
+.slot .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13.5px; color: var(--text-2); }
+.slot .kv span:nth-child(odd) { color: var(--text-3); }
+@media (max-width: 900px) { .slots { grid-template-columns: 1fr; } }
+
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.step { padding: 20px; }
+.step .n { width: 30px; height: 30px; border-radius: 8px; background: var(--accent-soft); color: var(--accent-ink); display: grid; place-items: center; font-weight: 700; font-size: 14px; margin-bottom: 12px; }
+.step h3 { margin: 0 0 6px; font-size: 16px; }
+.step p { margin: 0; color: var(--text-2); font-size: 14.5px; }
+@media (max-width: 900px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .steps { grid-template-columns: 1fr; } }
+
+.cta-band { margin: 96px 0 0; padding: 40px; border-radius: 20px; background: linear-gradient(135deg, var(--hero-1), #1a2547); color: var(--hero-text); display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+.cta-band h2 { margin: 0 0 6px; font-size: 26px; }
+.cta-band p { margin: 0; color: var(--hero-muted); }
+footer { padding: 40px 0 56px; color: var(--text-3); font-size: 14px; }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--border); padding-top: 24px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+table.data { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 12px; }
+table.data th, table.data td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+table.data th:first-child, table.data td:first-child { text-align: left; }
+.toggle-table { background: none; border: 0; color: var(--accent-ink); font: 600 13px Inter, sans-serif; cursor: pointer; padding: 0; margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="logo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h4l3-8 4 16 3-8h2"/></svg></span>Switchover Study</a>
+    <div class="nav-links">
+      <a href="#timeline" class="hide-sm">Timeline</a>
+      <a href="#late" class="hide-sm">Late commits</a>
+      <a href="#tickets" class="hide-sm">Tickets</a>
+      <a href="#slots" class="hide-sm">Slots</a>
+      <a href="https://github.com/shanurwan/ps-failover-study">GitHub</a>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span>Measured on a live PlanetScale Postgres cluster</span>
+    <h1>What a Postgres switchover <span class="grad">looks like from your app</span></h1>
+    <p class="lead">Eight documented switchovers, seven client stacks, every request logged. What breaks, for how long, what the customer will report, and what to tell them.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#timeline">See the results <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-ghost" href="https://github.com/shanurwan/ps-failover-study/blob/main/SUPPORT-NOTES.md">Support notes</a>
+      <a class="btn btn-ghost" href="https://github.com/shanurwan/ps-failover-study/blob/main/FINDINGS.md">Full findings</a>
+    </div>
+    <div class="meta">
+      <span><b>Cluster</b> PS-5 · 1 primary + 2 replicas</span>
+      <span><b>Postgres</b> 18.7</span>
+      <span><b>Region</b> AWS ap-southeast-1</span>
+      <span><b>Load</b> ≤ 200 req/s · 2 s deadline per request</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="kpis">
+    <div class="kpi"><span class="tag good">✓ Safe</span><div class="v">0</div><div class="l">acknowledged writes lost</div><div class="d">and 0 duplicate rows, across 16 client runs</div></div>
+    <div class="kpi"><span class="tag info">◷ Fast</span><div class="v">14–20 s</div><div class="l">to full recovery</div><div class="d">every stack recovered within the same second</div></div>
+    <div class="kpi"><span class="tag warn">! Watch</span><div class="v">39–55</div><div class="l">late commits per switchover</div><div class="d">writes the app gave up on that still committed</div></div>
+    <div class="kpi"><span class="tag bad">✕ Limit</span><div class="v">13–18 / 25</div><div class="l">connections held idle</div><div class="d">by PgBouncer for ~10 min after load on a PS-5</div></div>
+  </div>
+
+  <section class="block" id="timeline">
+    <div class="sec-head">
+      <div class="kicker">01 · Timeline</div>
+      <h2>The switchover sets the pace, not the library</h2>
+      <p>Each row is one client stack sending 28 requests per second. Each cell is one second; the darker it is, the more requests failed in it. Hover a cell for the numbers.</p>
+    </div>
+    <div class="card card-pad">
+      <div class="chart-top">
+        <div>
+          <div class="chart-title" id="hmTitle">Failed requests per second, by client</div>
+          <div class="chart-sub" id="hmSub"></div>
+        </div>
+        <div class="seg" role="group" aria-label="Endpoint">
+          <button aria-pressed="true" data-ep="pooled">PgBouncer · 6432</button>
+          <button aria-pressed="false" data-ep="direct">Direct · 5432</button>
+        </div>
+      </div>
+      <div class="chart-wrap" id="heatmap"></div>
+      <div class="legend">
+        <span>Failed requests / s</span>
+        <span class="ramp" id="rampLegend"></span>
+        <span><span class="swatch-line"></span> switchover started / completed (PlanetScale's own record)</span>
+      </div>
+      <button class="toggle-table" id="hmTableBtn" aria-expanded="false">Show as table</button>
+      <div id="hmTable" hidden></div>
+      <div class="note" id="hmNote"></div>
+    </div>
+  </section>
+
+  <section class="block" id="late">
+    <div class="sec-head">
+      <div class="kicker">02 · Late commits</div>
+      <h2>Where "duplicate rows" tickets come from</h2>
+      <p>Every request had a 2 s deadline. When it passed, the app counted the write as failed. Many of those writes committed anyway.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card card-pad">
+        <div class="chart-top">
+          <div>
+            <div class="chart-title">Writes committed after the app gave up</div>
+            <div class="chart-sub">Per switchover, through PgBouncer. Each one confirmed in the database.</div>
+          </div>
+          <div class="seg" role="group" aria-label="Run">
+            <button aria-pressed="true" data-run="1">Run 1</button>
+            <button aria-pressed="false" data-run="2">Run 2</button>
+          </div>
+        </div>
+        <div class="chart-wrap" id="bars"></div>
+        <button class="toggle-table" id="barTableBtn" aria-expanded="false">Show as table</button>
+        <div id="barTable" hidden></div>
+      </div>
+      <div class="card card-pad callout">
+        <h3>Why pgx is near zero</h3>
+        <p>pgx cancels the query when the context deadline passes, so the write usually never commits. node-postgres, Prisma, postgres-js, psycopg and ActiveRecord have no per-call cancellation: the write keeps going after the app has moved on.</p>
+        <h3 style="margin-top:18px">What it means for a customer</h3>
+        <ul>
+          <li>The database lost nothing and duplicated nothing.</li>
+          <li>An app that <b>retries</b> a timed-out write without an idempotency key creates the duplicate itself.</li>
+          <li>Fix: a client-generated key with <code>ON CONFLICT DO NOTHING</code>, or an idempotency table.</li>
+        </ul>
+        <p style="margin-top:14px">On direct 5432, pgx also lost 12–13 <i>acknowledgements</i> in transit: the client saw an error, but the row was committed.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="tickets">
+    <div class="sec-head">
+      <div class="kicker">03 · Tickets</div>
+      <h2>Ready-to-use answers for six real tickets</h2>
+      <p>Each finding written the way a customer reports it: what they say, what to ask, the cause, and the fix. Click a ticket to open it.</p>
+    </div>
+    <div class="tickets" id="ticketList"></div>
+  </section>
+
+  <section class="block" id="pooling">
+    <div class="sec-head">
+      <div class="kicker">04 · Transaction pooling</div>
+      <h2>What survives port 6432, and what quietly doesn't</h2>
+      <p>Two connections, A and B, through PlanetScale's PgBouncer (transaction mode), each check repeated 10 times, quiet and under load.</p>
+    </div>
+    <div class="card card-pad scroll-x">
+      <table class="matrix">
+        <thead><tr><th>Feature</th><th>Direct · 5432</th><th>PgBouncer · 6432</th></tr></thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block" id="slots">
+    <div class="sec-head">
+      <div class="kicker">05 · Logical replication</div>
+      <h2>When does a CDC slot survive a switchover?</h2>
+      <p>One <code>failover = true</code> slot, three setups, one switchover each. Configured as documented with an active consumer, it came through with every change.</p>
+    </div>
+    <div class="slots" id="slotCards"></div>
+    <div class="note">To check a replica holds a persistent copy: <code>SELECT synced, temporary FROM pg_replication_slots</code> on a replica. You want <code>synced = t</code> and <code>temporary = f</code>. Each case was run once.</div>
+  </section>
+
+  <section class="block" id="method">
+    <div class="sec-head">
+      <div class="kicker">06 · Method</div>
+      <h2>How it was measured</h2>
+      <p>Everything here is reproducible from the repository: clients, runner, raw request logs and the report generator.</p>
+    </div>
+    <div class="steps">
+      <div class="card step"><div class="n">1</div><h3>Seven clients</h3><p>pgx (two cancel modes), node-postgres, Prisma, Drizzle on postgres-js, SQLAlchemy + psycopg, Rails ActiveRecord.</p></div>
+      <div class="card step"><div class="n">2</div><h3>Steady load</h3><p>28 req/s per client, half inserts with a unique sequence number, every request logged with its verbatim error.</p></div>
+      <div class="card step"><div class="n">3</div><h3>Real switchovers</h3><p><code>pscale branch switchover</code>, timed against PlanetScale's own started and completed records.</p></div>
+      <div class="card step"><div class="n">4</div><h3>Audit the ledger</h3><p>Every acknowledged write checked in the database afterwards: missing, duplicated, or committed late.</p></div>
+    </div>
+    <div class="note"><b>Limits.</b> One cluster size (PS-5), one region. The direct-connection round used pgx only. Short ~2 s pauses that hit several clients outside any switchover were seen once and are not explained.</div>
+  </section>
+
+  <div class="cta-band">
+    <div>
+      <h2>Read the raw data, or rerun it</h2>
+      <p>Harness, findings, ticket notes and redacted reports, all on GitHub.</p>
+    </div>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/shanurwan/ps-failover-study">View the repository</a>
+      <a class="btn btn-ghost" href="https://github.com/shanurwan/vitess-support-playbook">Vitess support playbook</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Independent study by <a href="https://github.com/shanurwan">Wan Nur Shafiqah</a>. Not affiliated with or endorsed by PlanetScale.</span>
+    <span>Measured 22 November 2026</span>
+  </div>
+</footer>
+
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+const DATA = {"runs":[{"client":"drizzle-postgresjs","run":"pooled-1","endpoint":"pooled","requests":3920,"errors":78,"first_error_s":16.133,"error_window_s":2.822,"recovered_s":18.991,"inserts_attempted":1960,"inserts_acked":1920,"acked_missing":[],"duplicates":[],"unacked_present":40,"ps_completed_at_s":77.87,"round":"switchover"},{"client":"drizzle-postgresjs","run":"pooled-2","endpoint":"pooled","requests":3920,"errors":79,"first_error_s":11.167,"error_window_s":2.893,"recovered_s":14.095,"inserts_attempted":1960,"inserts_acked":1921,"acked_missing":[],"duplicates":[],"unacked_present":39,"ps_completed_at_s":34.21,"round":"switchover"},{"client":"node-pg","run":"pooled-1","endpoint":"pooled","requests":3920,"errors":95,"first_error_s":1.913,"error_window_s":17.357,"recovered_s":19.306,"inserts_attempted":1960,"inserts_acked":1912,"acked_missing":[],"duplicates":[],"unacked_present":48,"ps_completed_at_s":77.87,"round":"switchover"},{"client":"node-pg","run":"pooled-2","endpoint":"pooled","requests":3920,"errors":93,"first_error_s":11.15,"error_window_s":3.286,"recovered_s":14.472,"inserts_attempted":1960,"inserts_acked":1914,"acked_missing":[],"duplicates":[],"unacked_present":46,"ps_completed_at_s":34.21,"round":"switchover"},{"client":"pgx-cancelreq","run":"pooled-1","endpoint":"pooled","requests":3921,"errors":81,"first_error_s":16.131,"error_window_s":2.858,"recovered_s":19.024,"inserts_attempted":1961,"inserts_acked":1921,"acked_missing":[],"duplicates":[],"unacked_present":0,"ps_completed_at_s":77.87,"round":"switchover"},{"client":"pgx-cancelreq","run":"pooled-2","endpoint":"pooled","requests":3921,"errors":81,"first_error_s":11.137,"error_window_s":2.857,"recovered_s":14.03,"inserts_attempted":1961,"inserts_acked":1920,"acked_missing":[],"duplicates":[],"unacked_present":3,"ps_completed_at_s":34.21,"round":"switchover"},{"client":"pgx-default","run":"pooled-1","endpoint":"pooled","requests":3921,"errors":86,"first_error_s":2.195,"error_window_s":16.929,"recovered_s":19.159,"inserts_attempted":1961,"inserts_acked":1917,"acked_missing":[],"duplicates":[],"unacked_present":2,"ps_completed_at_s":77.87,"round":"switchover"},{"client":"pgx-default","run":"pooled-2","endpoint":"pooled","requests":3921,"errors":86,"first_error_s":11.157,"error_window_s":3.036,"recovered_s":14.228,"inserts_attempted":1961,"inserts_acked":1918,"acked_missing":[],"duplicates":[],"unacked_present":1,"ps_completed_at_s":34.21,"round":"switchover"},{"client":"prisma","run":"pooled-1","endpoint":"pooled","requests":3920,"errors":97,"first_error_s":1.842,"error_window_s":17.429,"recovered_s":19.306,"inserts_attempted":1960,"inserts_acked":1912,"acked_missing":[],"duplicates":[],"unacked_present":48,"ps_completed_at_s":77.87,"round":"switchover"},{"client":"prisma","run":"pooled-2","endpoint":"pooled","requests":3920,"errors":94,"first_error_s":11.142,"error_window_s":3.321,"recovered_s":14.499,"inserts_attempted":1960,"inserts_acked":1913,"acked_missing":[],"duplicates":[],"unacked_present":47,"ps_completed_at_s":34.21,"round":"switchover"},{"client":"rails-activerecord","run":"pooled-1","endpoint":"pooled","requests":3920,"errors":103,"first_error_s":16.149,"error_window_s":3.643,"recovered_s":19.828,"inserts_attempted":1960,"inserts_acked":1908,"acked_missing":[],"duplicates":[],"unacked_present":52,"ps_completed_at_s":77.87,"round":"switchover"},{"client":"rails-activerecord","run":"pooled-2","endpoint":"pooled","requests":3920,"errors":110,"first_error_s":11.145,"error_window_s":3.893,"recovered_s":15.074,"inserts_attempted":1960,"inserts_acked":1905,"acked_missing":[],"duplicates":[],"unacked_present":55,"ps_completed_at_s":34.21,"round":"switchover"},{"client":"sqlalchemy-psycopg","run":"pooled-1","endpoint":"pooled","requests":3920,"errors":94,"first_error_s":2.248,"error_window_s":17.036,"recovered_s":19.32,"inserts_attempted":1960,"inserts_acked":1914,"acked_missing":[],"duplicates":[],"unacked_present":46,"ps_completed_at_s":77.87,"round":"switchover"},{"client":"sqlalchemy-psycopg","run":"pooled-2","endpoint":"pooled","requests":3920,"errors":93,"first_error_s":11.137,"error_window_s":3.285,"recovered_s":14.458,"inserts_attempted":1960,"inserts_acked":1914,"acked_missing":[],"duplicates":[],"unacked_present":46,"ps_completed_at_s":34.21,"round":"switchover"},{"client":"pgx-default","run":"direct-1","endpoint":"direct","requests":7000,"errors":80,"first_error_s":17.058,"error_window_s":1.8,"recovered_s":18.878,"inserts_attempted":3500,"inserts_acked":3455,"acked_missing":[],"duplicates":[],"unacked_present":13,"ps_completed_at_s":44.88,"round":"switchover-direct"},{"client":"pgx-default","run":"direct-2","endpoint":"direct","requests":7000,"errors":81,"first_error_s":12.7,"error_window_s":1.82,"recovered_s":14.54,"inserts_attempted":3500,"inserts_acked":3454,"acked_missing":[],"duplicates":[],"unacked_present":12,"ps_completed_at_s":38.65,"round":"switchover-direct"}],"timeline":{"drizzle-postgresjs":[[-10,28,0],[-9,28,0],[-8,28,0],[-7,28,0],[-6,28,0],[-5,28,0],[-4,28,0],[-3,28,0],[-2,28,0],[-1,28,0],[0,28,0],[1,28,0],[2,28,0],[3,28,0],[4,28,0],[5,28,0],[6,28,0],[7,28,0],[8,28,0],[9,28,0],[10,28,0],[11,28,24],[12,28,28],[13,28,26],[14,28,1],[15,28,0],[16,28,0],[17,28,0],[18,28,0],[19,28,0],[20,28,0],[21,28,0],[22,28,0],[23,28,0],[24,28,0],[25,28,0],[26,28,0],[27,28,0],[28,28,0],[29,28,0],[30,28,0],[31,28,0],[32,28,0],[33,28,0],[34,28,0],[35,28,0],[36,28,0],[37,28,0],[38,28,0],[39,28,0],[40,28,0],[41,28,0],[42,28,0],[43,28,0],[44,28,0],[45,28,0]],"node-pg":[[-10,28,0],[-9,28,0],[-8,28,0],[-7,28,0],[-6,28,0],[-5,28,0],[-4,28,0],[-3,28,0],[-2,28,0],[-1,28,0],[0,28,0],[1,28,0],[2,28,0],[3,28,0],[4,28,0],[5,28,0],[6,28,0],[7,28,0],[8,28,0],[9,28,0],[10,28,0],[11,28,24],[12,28,28],[13,28,28],[14,28,13],[15,28,0],[16,28,0],[17,28,0],[18,28,0],[19,28,0],[20,28,0],[21,28,0],[22,28,0],[23,28,0],[24,28,0],[25,28,0],[26,28,0],[27,28,0],[28,28,0],[29,28,0],[30,28,0],[31,28,0],[32,28,0],[33,28,0],[34,28,0],[35,28,0],[36,28,0],[37,28,0],[38,28,0],[39,28,0],[40,28,0],[41,28,0],[42,28,0],[43,28,0],[44,28,0],[45,28,0]],"pgx-cancelreq":[[-10,28,0],[-9,28,0],[-8,28,0],[-7,28,0],[-6,28,0],[-5,28,0],[-4,28,0],[-3,28,0],[-2,28,0],[-1,28,0],[0,28,0],[1,28,0],[2,28,0],[3,28,0],[4,28,0],[5,28,0],[6,28,0],[7,28,0],[8,28,0],[9,28,0],[10,28,0],[11,3,25],[12,0,28],[13,0,28],[14,28,0],[15,28,0],[16,28,0],[17,28,0],[18,28,0],[19,28,0],[20,28,0],[21,28,0],[22,28,0],[23,28,0],[24,28,0],[25,28,0],[26,28,0],[27,28,0],[28,28,0],[29,28,0],[30,28,0],[31,28,0],[32,28,0],[33,28,0],[34,28,0],[35,28,0],[36,28,0],[37,28,0],[38,28,0],[39,28,0],[40,28,0],[41,28,0],[42,28,0],[43,28,0],[44,28,0],[45,28,0]],"pgx-default":[[-10,28,0],[-9,28,0],[-8,28,0],[-7,28,0],[-6,28,0],[-5,28,0],[-4,28,0],[-3,28,0],[-2,28,0],[-1,28,0],[0,28,0],[1,28,0],[2,28,0],[3,28,0],[4,28,0],[5,28,0],[6,28,0],[7,28,0],[8,28,0],[9,28,0],[10,28,0],[11,4,24],[12,0,28],[13,0,28],[14,22,6],[15,28,0],[16,28,0],[17,28,0],[18,28,0],[19,28,0],[20,28,0],[21,28,0],[22,28,0],[23,28,0],[24,28,0],[25,28,0],[26,28,0],[27,28,0],[28,28,0],[29,28,0],[30,28,0],[31,28,0],[32,28,0],[33,28,0],[34,28,0],[35,28,0],[36,28,0],[37,28,0],[38,28,0],[39,28,0],[40,28,0],[41,28,0],[42,28,0],[43,28,0],[44,28,0],[45,28,0]],"prisma":[[-10,28,0],[-9,28,0],[-8,28,0],[-7,28,0],[-6,28,0],[-5,28,0],[-4,28,0],[-3,28,0],[-2,28,0],[-1,28,0],[0,28,0],[1,28,0],[2,28,0],[3,28,0],[4,28,0],[5,28,0],[6,28,0],[7,28,0],[8,28,0],[9,28,0],[10,28,0],[11,28,25],[12,28,28],[13,28,28],[14,28,13],[15,28,0],[16,28,0],[17,28,0],[18,28,0],[19,28,0],[20,28,0],[21,28,0],[22,28,0],[23,28,0],[24,28,0],[25,28,0],[26,28,0],[27,28,0],[28,28,0],[29,28,0],[30,28,0],[31,28,0],[32,28,0],[33,28,0],[34,28,0],[35,28,0],[36,28,0],[37,28,0],[38,28,0],[39,28,0],[40,28,0],[41,28,0],[42,28,0],[43,28,0],[44,28,0],[45,28,0]],"rails-activerecord":[[-10,28,0],[-9,28,0],[-8,28,0],[-7,28,0],[-6,28,0],[-5,28,0],[-4,28,0],[-3,28,0],[-2,28,0],[-1,28,0],[0,28,0],[1,28,0],[2,28,0],[3,28,0],[4,28,0],[5,28,0],[6,28,0],[7,28,0],[8,28,0],[9,28,0],[10,28,0],[11,28,24],[12,28,28],[13,28,28],[14,28,28],[15,28,2],[16,28,0],[17,28,0],[18,28,0],[19,28,0],[20,28,0],[21,28,0],[22,28,0],[23,28,0],[24,28,0],[25,28,0],[26,28,0],[27,28,0],[28,28,0],[29,28,0],[30,28,0],[31,28,0],[32,28,0],[33,28,0],[34,28,0],[35,28,0],[36,28,0],[37,28,0],[38,28,0],[39,28,0],[40,28,0],[41,28,0],[42,28,0],[43,28,0],[44,28,0],[45,28,0]],"sqlalchemy-psycopg":[[-10,28,0],[-9,28,0],[-8,28,0],[-7,28,0],[-6,28,0],[-5,28,0],[-4,28,0],[-3,28,0],[-2,28,0],[-1,28,0],[0,28,0],[1,28,0],[2,28,0],[3,28,0],[4,28,0],[5,28,0],[6,28,0],[7,28,0],[8,28,0],[9,28,0],[10,28,0],[11,28,25],[12,28,28],[13,28,28],[14,28,12],[15,28,0],[16,28,0],[17,28,0],[18,28,0],[19,28,0],[20,28,0],[21,28,0],[22,28,0],[23,28,0],[24,28,0],[25,28,0],[26,28,0],[27,28,0],[28,28,0],[29,28,0],[30,28,0],[31,28,0],[32,28,0],[33,28,0],[34,28,0],[35,28,0],[36,28,0],[37,28,0],[38,28,0],[39,28,0],[40,28,0],[41,28,0],[42,28,0],[43,28,0],[44,28,0],[45,28,0]],"pgx-default-direct":[[-10,50,0],[-9,50,0],[-8,50,0],[-7,50,0],[-6,50,0],[-5,50,0],[-4,50,0],[-3,50,0],[-2,50,0],[-1,50,0],[0,50,0],[1,50,0],[2,50,0],[3,50,0],[4,50,0],[5,50,0],[6,50,0],[7,50,0],[8,50,0],[9,50,0],[10,50,0],[11,50,0],[12,50,0],[13,50,0],[14,50,0],[15,50,0],[16,50,0],[17,9,41],[18,11,39],[19,50,0],[20,50,0],[21,50,0],[22,50,0],[23,50,0],[24,50,0],[25,50,0],[26,50,0],[27,50,0],[28,50,0],[29,50,0],[30,50,0],[31,50,0],[32,50,0],[33,50,0],[34,50,0],[35,50,0],[36,50,0],[37,50,0],[38,50,0],[39,50,0],[40,50,0],[41,50,0],[42,50,0],[43,50,0],[44,50,0],[45,50,0]]},"ps":{"drizzle-postgresjs":{"ps_started_at_s":4.34,"ps_completed_at_s":34.21},"node-pg":{"ps_started_at_s":4.34,"ps_completed_at_s":34.21},"pgx-cancelreq":{"ps_started_at_s":4.34,"ps_completed_at_s":34.21},"pgx-default":{"ps_started_at_s":4.34,"ps_completed_at_s":34.21},"prisma":{"ps_started_at_s":4.34,"ps_completed_at_s":34.21},"rails-activerecord":{"ps_started_at_s":4.34,"ps_completed_at_s":34.21},"sqlalchemy-psycopg":{"ps_started_at_s":4.34,"ps_completed_at_s":34.21},"pgx-default-direct":{"ps_started_at_s":4.28,"ps_completed_at_s":44.88}}};
+
+const NAMES = {
+  "pgx-default": "pgx v5.13", "pgx-cancelreq": "pgx (CancelRequest)", "node-pg": "node-postgres 8.23",
+  "prisma": "Prisma 7.10", "drizzle-postgresjs": "Drizzle / postgres-js", "sqlalchemy-psycopg": "SQLAlchemy + psycopg",
+  "rails-activerecord": "Rails ActiveRecord 8.1", "pgx-default-direct": "pgx v5.13 (direct)"
+};
+const SHORT = { "pgx-default": "pgx", "pgx-cancelreq": "pgx cancel", "node-pg": "node-pg", "prisma": "Prisma", "drizzle-postgresjs": "Drizzle", "sqlalchemy-psycopg": "SQLAlchemy", "rails-activerecord": "Rails", "pgx-default-direct": "pgx direct" };
+const ORDER = ["pgx-default", "pgx-cancelreq", "node-pg", "prisma", "drizzle-postgresjs", "sqlalchemy-psycopg", "rails-activerecord"];
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+
+/* tooltip */
+const tip = document.getElementById("tip");
+function showTip(html, x, y) {
+  tip.innerHTML = html; tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect();
+  let left = x + 14, top = y + 14;
+  if (left + r.width > innerWidth - 8) left = x - r.width - 14;
+  if (top + r.height > innerHeight - 8) top = y - r.height - 14;
+  tip.style.left = Math.max(8, left) + "px"; tip.style.top = Math.max(8, top) + "px";
+}
+const hideTip = () => { tip.style.opacity = 0; };
+
+/* heatmap */
+let ep = "pooled";
+const STEPS = ["--s0", "--s1", "--s2", "--s3", "--s4", "--s5", "--s6", "--s7"];
+function stepFor(err) { if (err === 0) return STEPS[0]; const i = Math.min(7, 1 + Math.floor(err / 4.01)); return STEPS[i]; }
+function drawRamp() {
+  const r = document.getElementById("rampLegend"); r.innerHTML = "";
+  STEPS.forEach((s) => { const i = document.createElement("i"); i.style.background = css(s); r.appendChild(i); });
+  r.insertAdjacentHTML("afterend", "");
+}
+function drawHeatmap() {
+  const host = document.getElementById("heatmap"); host.innerHTML = "";
+  const keys = ep === "pooled" ? ORDER : ["pgx-default-direct"];
+  const ps = DATA.ps[keys[0]];
+  const T0 = -10, T1 = 45, cols = T1 - T0 + 1;
+  const W = host.clientWidth || 900;
+  const sm = W < 560, labelW = sm ? 78 : 170, gap = sm ? 1 : 2;
+  const cw = (W - labelW - 8) / cols, ch = sm ? 22 : 30, top = 42, H = top + keys.length * ch + 30;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img", "aria-label": "Heatmap of failed requests per second by client around the switchover" }, host);
+  const x = (t) => labelW + (t - T0) * cw;
+  // axis ticks
+  for (let t = -10; t <= 45; t += sm ? 10 : 5) {
+    el("text", { x: x(t) + cw / 2, y: H - 10, "text-anchor": "middle", "font-size": 11, fill: css("--text-3") }, svg).textContent = (t > 0 ? "+" : "") + t + "s";
+  }
+  keys.forEach((k, ri) => {
+    const y = top + ri * ch;
+    el("text", { x: labelW - 12, y: y + ch / 2 + 4, "text-anchor": "end", "font-size": sm ? 11 : 13, "font-weight": 500, fill: css("--text") }, svg).textContent = sm ? SHORT[k] : NAMES[k];
+    const m = new Map(DATA.timeline[k].map(([s, ok, er]) => [s, [ok, er]]));
+    for (let t = T0; t <= T1; t++) {
+      const [ok, er] = m.get(t) || [0, 0];
+      const r = el("rect", { x: x(t) + gap / 2, y: y + gap / 2, width: Math.max(1, cw - gap), height: ch - gap, rx: Math.min(4, cw / 4), fill: css(stepFor(er)) }, svg);
+      r.style.cursor = "crosshair";
+      r.addEventListener("mousemove", (e) => {
+        showTip(`<b>${NAMES[k]}</b><div class="row"><span>Second</span><span>${t >= 0 ? "+" : ""}${t} s</span></div><div class="row"><span>Succeeded</span><span>${ok}</span></div><div class="row"><span>Failed</span><span>${er}</span></div>`, e.clientX, e.clientY);
+        r.setAttribute("stroke", css("--text")); r.setAttribute("stroke-width", 1.5);
+      });
+      r.addEventListener("mouseleave", () => { hideTip(); r.removeAttribute("stroke"); });
+    }
+  });
+  // markers
+  [[ps.ps_started_at_s, "started", 14], [ps.ps_completed_at_s, "completed", 30]].forEach(([s, lab, ly]) => {
+    const xx = x(s);
+    el("line", { x1: xx, x2: xx, y1: ly + 4, y2: top + keys.length * ch, stroke: css("--marker"), "stroke-width": 2, "stroke-dasharray": "4 3" }, svg);
+    el("text", { x: lab === "started" ? xx + 6 : xx - 6, y: ly, "text-anchor": lab === "started" ? "start" : "end", "font-size": 11, "font-weight": 600, fill: css("--text-2") }, svg).textContent = (sm ? lab : "switchover " + lab) + " " + s.toFixed(1) + " s";
+  });
+  // subtitle + note
+  const runs = DATA.runs.filter((r) => (ep === "pooled" ? r.round === "switchover" && r.run === "pooled-2" : r.round === "switchover-direct" && r.run === "direct-1"));
+  const rec = runs.map((r) => r.recovered_s), win = runs.map((r) => r.error_window_s);
+  document.getElementById("hmSub").textContent = ep === "pooled"
+    ? "Run 2 through PgBouncer · t = 0 when the switchover command started"
+    : "Direct connection, pgx only · t = 0 when the switchover command started";
+  document.getElementById("hmNote").innerHTML = ep === "pooled"
+    ? `<b>Read it like this:</b> all seven stacks start failing in the same second and recover between ${Math.min(...rec).toFixed(1)} and ${Math.max(...rec).toFixed(1)} s, well before PlanetScale marks the switchover complete. Through PgBouncer, every failure the app saw was a <b>timeout</b>; no Postgres error reached it.`
+    : `<b>Direct connections fail faster and louder:</b> a ${win[0].toFixed(1)} s error window with real Postgres errors (<code>57P01</code> terminating connection, <code>57P03</code> shutting down) instead of timeouts, and full recovery at ${rec[0].toFixed(1)} s.`;
+  // table
+  const tb = document.getElementById("hmTable");
+  let h = `<table class="data"><thead><tr><th>Client</th><th>First error (s)</th><th>Error window (s)</th><th>Recovered (s)</th><th>Failed requests</th></tr></thead><tbody>`;
+  runs.sort((a, b) => ORDER.indexOf(a.client) - ORDER.indexOf(b.client)).forEach((r) => {
+    h += `<tr><td>${NAMES[r.client + (ep === "direct" ? "-direct" : "")]}</td><td>${r.first_error_s.toFixed(1)}</td><td>${r.error_window_s.toFixed(1)}</td><td>${r.recovered_s.toFixed(1)}</td><td>${r.errors}</td></tr>`;
+  });
+  tb.innerHTML = h + "</tbody></table>";
+}
+
+/* bars */
+let run = "1";
+function drawBars() {
+  const host = document.getElementById("bars"); host.innerHTML = "";
+  const rows = ORDER.map((k) => DATA.runs.find((r) => r.round === "switchover" && r.client === k && r.run === "pooled-" + run));
+  const W = host.clientWidth || 600, sb = W < 480, labelW = sb ? 84 : 170, bh = 26, gap = 10, top = 6;
+  const H = top + rows.length * (bh + gap) + 24;
+  const max = 60, x = (v) => labelW + (v / max) * (W - labelW - 44);
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img", "aria-label": "Bar chart of late commits per client" }, host);
+  [0, 20, 40, 60].forEach((v) => {
+    el("line", { x1: x(v), x2: x(v), y1: top, y2: H - 22, stroke: css("--border"), "stroke-width": 1 }, svg);
+    el("text", { x: x(v), y: H - 6, "text-anchor": "middle", "font-size": 11, fill: css("--text-3") }, svg).textContent = v;
+  });
+  rows.forEach((r, i) => {
+    const y = top + i * (bh + gap), v = r.unacked_present, isPgx = r.client.startsWith("pgx");
+    el("text", { x: labelW - 12, y: y + bh / 2 + 4, "text-anchor": "end", "font-size": sb ? 11 : 13, "font-weight": 500, fill: css("--text") }, svg).textContent = sb ? SHORT[r.client] : NAMES[r.client];
+    const w = Math.max(4, x(v) - labelW);
+    const p = el("path", { d: `M${labelW},${y} h${w - 4} a4,4 0 0 1 4,4 v${bh - 8} a4,4 0 0 1 -4,4 h${-(w - 4)} z`, fill: css("--bar") }, svg);
+    el("text", { x: labelW + w + 8, y: y + bh / 2 + 4, "font-size": 12.5, "font-weight": 600, fill: css("--text") }, svg).textContent = v;
+    const hit = el("rect", { x: labelW, y: y - 3, width: W - labelW, height: bh + 6, fill: "transparent" }, svg);
+    hit.addEventListener("mousemove", (e) => {
+      showTip(`<b>${NAMES[r.client]}</b><div class="row"><span>Committed after timeout</span><span>${v}</span></div><div class="row"><span>Writes acknowledged</span><span>${r.inserts_acked}</span></div><div class="row"><span>Acked but missing</span><span>0</span></div><div class="row"><span>Duplicates</span><span>0</span></div>`, e.clientX, e.clientY);
+      p.setAttribute("opacity", .8);
+    });
+    hit.addEventListener("mouseleave", () => { hideTip(); p.removeAttribute("opacity"); });
+  });
+  const tb = document.getElementById("barTable");
+  let h = `<table class="data"><thead><tr><th>Client</th><th>Run 1</th><th>Run 2</th></tr></thead><tbody>`;
+  ORDER.forEach((k) => {
+    const a = DATA.runs.find((r) => r.round === "switchover" && r.client === k && r.run === "pooled-1");
+    const b = DATA.runs.find((r) => r.round === "switchover" && r.client === k && r.run === "pooled-2");
+    h += `<tr><td>${NAMES[k]}</td><td>${a.unacked_present}</td><td>${b.unacked_present}</td></tr>`;
+  });
+  tb.innerHTML = h + "</tbody></table>";
+}
+
+/* tickets */
+const TICKETS = [
+  { q: "We saw duplicate rows after a maintenance window", s: "Late commits plus app retries", ask: ["Which client library?", "Does the app retry writes that time out?", "Do duplicates share a timestamp near the switchover?"], cause: ["39–55 writes per switchover committed after a 2 s client timeout on node-postgres, Prisma, postgres-js, psycopg and Rails.", "The database lost and duplicated nothing."], fix: ["Idempotent retries: client key + <code>ON CONFLICT DO NOTHING</code>.", "In Go, pgx context cancellation stops most late commits."] },
+  { q: "Errors for 15–20 seconds during a switchover. Is that normal?", s: "Expected recovery window", ask: ["First and last error timestamps.", "The switchover id from <code>pscale branch switchover list</code>."], cause: ["Every stack recovered 14–20 s after the command.", "Errors lasted ~2–4 s in most runs; 1.8 s direct."], fix: ["Request timeout plus retry with backoff on idempotent work.", "Alert on error rate over ~30 s, not single errors."] },
+  { q: "psql and migrations can't connect, but nothing is running", s: "<code>remaining connection slots are reserved…</code>", ask: ["Cluster size and <code>SHOW max_connections</code>.", "Did it follow a traffic spike?"], cause: ["A PS-5 allows 25 connections.", "PgBouncer kept 13–18 server connections for ~10 min after load stopped."], fix: ["Route the job through 6432, or wait.", "Lower the pool size or raise <code>max_connections</code>; or size up."] },
+  { q: "LISTEN/NOTIFY stopped working after we moved", s: "Silent in transaction pooling", ask: ["Port 6432 or 5432?"], cause: ["<code>LISTEN</code> succeeds on 6432 but notifications never arrive: 0 of 3, no error."], fix: ["Run the listener on a direct 5432 connection."] },
+  { q: "ENOENT: no such file or directory, open 'system'", s: "Node with the dashboard URL", ask: ["Which driver, and the exact connection string (minus password)?"], cause: ["<code>sslrootcert=system</code> is a libpq keyword. node-postgres and Prisma's adapter read it as a file path."], fix: ["Drop <code>sslrootcert=system</code>, keep <code>sslmode=verify-full</code>.", "In slim Docker images, install <code>ca-certificates</code>."] },
+  { q: "Our CDC pipeline lost its position after a switchover", s: "Logical slot not carried over", ask: ["Slot created with <code>failover = true</code>?", "<code>sync_replication_slots</code> and <code>hot_standby_feedback</code> on?", "Was the consumer running beforehand?"], cause: ["Settings off: slot lost.", "Settings on, consumer idle: replica copy still temporary, slot lost.", "Settings on, consumer active: slot survived with every change."], fix: ["Set both parameters, create slots with <code>failover = true</code>.", "Keep the consumer running before planned changes."] },
+];
+function drawTickets() {
+  const list = document.getElementById("ticketList");
+  const chev = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+  list.innerHTML = TICKETS.map((t, i) => `
+    <details class="ticket"${i === 0 ? " open" : ""}>
+      <summary><span class="tno">#${String(i + 1).padStart(3, "0")}</span><span class="tq">“${t.q}”<small>${t.s}</small></span><span class="chev">${chev}</span></summary>
+      <div class="tbody">
+        <div class="tcol"><h4>Ask</h4><ul>${t.ask.map((a) => `<li>${a}</li>`).join("")}</ul></div>
+        <div class="tcol"><h4>What we measured</h4><ul>${t.cause.map((a) => `<li>${a}</li>`).join("")}</ul></div>
+        <div class="tcol"><h4>Fix</h4><ul>${t.fix.map((a) => `<li>${a}</li>`).join("")}</ul></div>
+      </div>
+    </details>`).join("");
+}
+
+/* matrix */
+const OK = (t) => `<span class="tag good">✓ ${t}</span>`, WARN = (t) => `<span class="tag warn">! ${t}</span>`, BAD = (t) => `<span class="tag bad">✕ ${t}</span>`;
+const MATRIX = [
+  ["SET search_path, application_name", OK("Works"), OK("Works") + `<span class="det">PlanetScale's PgBouncer tracks these per client.</span>`],
+  ["Protocol-level prepared statements", OK("Works"), OK("10 / 10") + `<span class="det">No client needed a prepared-statement setting.</span>`],
+  ["SET statement_timeout", OK("Stays on A"), BAD("Leaks") + `<span class="det">Quiet pool: B saw A's setting 10/10. Busy pool: A kept its own 2/10. Use <code>SET LOCAL</code>.</span>`],
+  ["Session advisory lock", OK("Correct"), BAD("Leaks") + `<span class="det">B "acquired" A's held lock 10/10; under load the lock leaked. Use <code>pg_advisory_xact_lock</code>.</span>`],
+  ["LISTEN / NOTIFY", OK("3 / 3"), BAD("0 / 3, silent") + `<span class="det">No error at all. Listener belongs on 5432.</span>`],
+  ["Temp table", OK("Correct"), WARN("Errors") + `<span class="det"><code>42P07 already exists</code>; under load inserts failed 8/10.</span>`],
+  ["SQL PREPARE", OK("Correct"), WARN("Errors") + `<span class="det"><code>42P05 already exists</code>; under load EXECUTE failed 6/10.</span>`],
+];
+document.getElementById("matrixBody").innerHTML = MATRIX.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("");
+
+/* slots */
+const SLOTS = [
+  { t: "Defaults", tag: BAD("Slot lost"), p: "<code>sync_replication_slots</code> and <code>hot_standby_feedback</code> off.", kv: [["PlanetScale", "Emailed within ~1 min: \"Logical replication needs your attention\""], ["Switchover", "52 s, completed"], ["New primary", "Slot gone"]] },
+  { t: "Parameters on, consumer idle", tag: BAD("Slot lost"), p: "Replica copy showed <code>synced = t</code> but still <code>temporary = t</code>.", kv: [["PlanetScale", "Set synchronized_standby_slots automatically"], ["Switchover", "43 s, completed"], ["New primary", "Slot gone"]] },
+  { t: "Parameters on, consumer active", tag: OK("Slot survived"), p: "One write and one read per second during the wait.", kv: [["Replica copy", "Persistent after 25 s"], ["Switchover", "35 s, completed"], ["New primary", "All 10 changes read, in order"]] },
+];
+document.getElementById("slotCards").innerHTML = SLOTS.map((s) => `<div class="card slot"><div>${s.tag}</div><h3>${s.t}</h3><p>${s.p}</p><div class="kv">${s.kv.map(([a, b]) => `<span>${a}</span><span>${b}</span>`).join("")}</div></div>`).join("");
+
+/* wiring */
+document.querySelectorAll("[data-ep]").forEach((b) => b.addEventListener("click", () => {
+  ep = b.dataset.ep; document.querySelectorAll("[data-ep]").forEach((x) => x.setAttribute("aria-pressed", x === b)); drawHeatmap();
+}));
+document.querySelectorAll("[data-run]").forEach((b) => b.addEventListener("click", () => {
+  run = b.dataset.run; document.querySelectorAll("[data-run]").forEach((x) => x.setAttribute("aria-pressed", x === b)); drawBars();
+}));
+function tableToggle(btnId, boxId) {
+  const btn = document.getElementById(btnId), box = document.getElementById(boxId);
+  btn.addEventListener("click", () => { box.hidden = !box.hidden; btn.setAttribute("aria-expanded", !box.hidden); btn.textContent = box.hidden ? "Show as table" : "Hide table"; });
+}
+tableToggle("hmTableBtn", "hmTable"); tableToggle("barTableBtn", "barTable");
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const dark = document.documentElement.getAttribute("data-theme") === "dark" || (!document.documentElement.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+  try { localStorage.setItem("theme", dark ? "light" : "dark"); } catch (e) {}
+  redraw();
+});
+try { const t = localStorage.getItem("theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+function redraw() { drawRamp(); drawHeatmap(); drawBars(); }
+drawTickets(); redraw();
+let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(redraw, 120); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw);
+</script>
+</body>
+</html>
